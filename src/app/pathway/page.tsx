@@ -319,8 +319,8 @@ export default function PathwayPage() {
                                 { name: "DevPath Roadmap + Weekly Plan", cost: 12000, icon: "🗺️", desc: "A realistic roadmap: What to learn, what to build, in what order. Time-bound and outcome-focused." },
                                 { name: "Single Guided Project (Chosen Tech Stack)", cost: 20000, icon: "🏗️", desc: "User selects stack. Receives one clear project problem, scope, and expected output." },
                             ].map((reward) => (
-                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
-                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-primary/50 hover:scale-105 transition-all duration-300">
+                                    <div className="text-4xl mb-2">{reward.icon}</div>
                                     <div>
                                         <h3 className="font-bold text-lg">{reward.name}</h3>
                                         <p className="text-sm text-muted-foreground">{reward.desc}</p>
@@ -347,8 +347,8 @@ export default function PathwayPage() {
                                 { name: "Community Spotlight", cost: 65000, icon: "🚀", desc: "Featured for Project, Learnings, and Execution clarity." },
                                 { name: "Verified Builder Badge", cost: 100000, icon: "🛠️", desc: "Earned only after completed project and review approval." },
                             ].map((reward) => (
-                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-blue-500/50 transition-colors group">
-                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-blue-500/50 hover:scale-105 transition-all duration-300">
+                                    <div className="text-4xl mb-2">{reward.icon}</div>
                                     <div>
                                         <h3 className="font-bold text-lg">{reward.name}</h3>
                                         <p className="text-sm text-muted-foreground">{reward.desc}</p>
@@ -376,8 +376,8 @@ export default function PathwayPage() {
                                 { name: "Laptop Cooling Pad", cost: 400000, icon: "❄️", desc: "Practical reward for people who actually build." },
                                 { name: "Free DevPath Event Ticket", cost: 500000, icon: "🎟️", desc: "Access to Workshop, Meetup, or DevPath-hosted event." },
                             ].map((reward) => (
-                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-purple-500/50 transition-colors group">
-                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-purple-500/50 hover:scale-105 transition-all duration-300">
+                                    <div className="text-4xl mb-2">{reward.icon}</div>
                                     <div>
                                         <h3 className="font-bold text-lg">{reward.name}</h3>
                                         <p className="text-sm text-muted-foreground">{reward.desc}</p>
@@ -402,8 +402,8 @@ export default function PathwayPage() {
                                 { name: "Mechanical Keyboard / Headset", cost: 800000, icon: "⌨️", desc: "One premium productivity accessory. Utility-focused." },
                                 { name: "DevPath Flagship Hardware", cost: 1000000, icon: "🖥️", desc: "External Monitor, Tablet, or Premium accessory. Rare & Symbolic." },
                             ].map((reward) => (
-                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-yellow-500/50 transition-colors group">
-                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-yellow-500/50 hover:scale-105 transition-all duration-300">
+                                    <div className="text-4xl mb-2">{reward.icon}</div>
                                     <div>
                                         <h3 className="font-bold text-lg">{reward.name}</h3>
                                         <p className="text-sm text-muted-foreground">{reward.desc}</p>
