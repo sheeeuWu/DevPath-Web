@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Wiki.module.css';
@@ -41,6 +41,44 @@ const categories = [
 export default function WikiPage() {
     const [activeArticle, setActiveArticle] = useState("intro");
     const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        const articleBody = document.querySelector(`.${styles.articleBody}`);
+        if (!articleBody) return;
+        const preElements = articleBody.querySelectorAll('pre');
+
+        preElements.forEach((pre) => {
+            if (pre.parentElement?.classList.contains('code-wrapper')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-wrapper relative group w-full';
+
+            pre.parentNode?.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            const button = document.createElement('button');
+            button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-zinc-900/80 text-zinc-300 rounded border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-md cursor-pointer backdrop-blur-sm';
+            button.innerHTML = 'Copy';
+            button.type = 'button';
+
+            button.addEventListener('click', async () => {
+                const codeText = pre.textContent || '';
+                try {
+                    await navigator.clipboard.writeText(codeText);
+                    button.innerHTML = 'Copied!';
+                    button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-emerald-600 text-white rounded border border-emerald-500 transition-all duration-200 shadow-md';
+                    setTimeout(() => {
+                        button.innerHTML = 'Copy';
+                        button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-zinc-900/80 text-zinc-300 rounded border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-md cursor-pointer backdrop-blur-sm';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+            });
+
+            wrapper.appendChild(button);
+        });
+    }, [activeArticle]);
 
     return (
         <div className={styles.container}>
