@@ -48,20 +48,12 @@ jobs:
             sleep 2
           done
 
-      - name: Install Nuclei
-        run: |
-          wget -q https://github.com/projectdiscovery/nuclei/releases/download/v3.3.8/nuclei_3.3.8_linux_amd64.zip
-          unzip -q nuclei_3.3.8_linux_amd64.zip
-          sudo mv nuclei /usr/local/bin/
-          nuclei -version
-
       - name: Run Nuclei Scan
-        run: |
-          nuclei -u http://localhost:3000 \
-            -tags exposure,misconfig,headers,tech \
-            -severity low,medium,high,critical \
-            -o nuclei-results.txt \
-            -no-color || true
+        uses: projectdiscovery/nuclei-action@v2
+        with:
+          target: http://localhost:3000
+          flags: "-tags exposure,misconfig,headers,tech -severity low,medium,high,critical"
+          output: nuclei-results.txt
 
       - name: Upload Nuclei Results
         uses: actions/upload-artifact@v4
