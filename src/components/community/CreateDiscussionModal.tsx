@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, updateDoc, doc, increment } from 'firebase/firestore';
+import { POINTS } from '@/lib/points';
 import { db } from '@/lib/firebase';
 
 interface CreateDiscussionModalProps {
@@ -37,6 +38,10 @@ export default function CreateDiscussionModal({ isOpen, onClose, userId, userNam
                 likes: [],
                 replyCount: 0,
                 createdAt: serverTimestamp()
+            });
+            
+            await updateDoc(doc(db, 'members', userId), {
+                points: increment(POINTS.CREATE_DISCUSSION)
             });
 
             onSuccess();

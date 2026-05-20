@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Upload, Plus, Trash2, Link as LinkIcon, Video, Image as ImageIcon, Globe, Save } from 'lucide-react';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp, setDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { POINTS } from '@/lib/points';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -157,8 +158,10 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                 // 2. Set in Subcollection (with same ID)
                 const subcollectionParentId = userId;
                 await setDoc(doc(db, 'members', subcollectionParentId, 'projects', newId), newProjectData);
+                await updateDoc(doc(db, 'members', userId), {
+                    points: increment(POINTS.CREATE_PROJECT)
+                });
             }
-
             onSuccess();
             onClose();
         } catch (error) {
