@@ -208,7 +208,7 @@ export default function NotificationsPage() {
 
                                             {notif.image && (
                                                 <div className="mt-4 rounded-lg overflow-hidden border border-border max-w-md relative aspect-video">
-                                                    <Image src={notif.image} alt="Attachment" fill className="object-contain" />
+                                                    <Image src={notif.image} alt={`${notif.title} notification attachment`} fill className="object-contain" />
                                                 </div>
                                             )}
                                         </div>

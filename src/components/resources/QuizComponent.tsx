@@ -88,12 +88,13 @@ export default function QuizComponent({ quizId, questions, onComplete, title = "
                 points: newPoints
               });
 
-              // Show Toasts
-              if (isPerfect) {
-                addXp(350, "Perfect Quiz Score!");
-              } else {
-                addXp(200, "Passed Quiz Successfully!");
-              }
+              // Firestore already received the points update above; this call only shows feedback.
+              addXp(
+                pointsEarned,
+                isPerfect ? "Perfect Quiz Score!" : "Passed Quiz Successfully!",
+                "xp",
+                { persist: false }
+              );
             }
           } else if (!user) {
             // For unauthenticated testing
@@ -116,7 +117,7 @@ export default function QuizComponent({ quizId, questions, onComplete, title = "
 
     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-    const interval: any = setInterval(function() {
+    const interval: ReturnType<typeof setInterval> = setInterval(function() {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {

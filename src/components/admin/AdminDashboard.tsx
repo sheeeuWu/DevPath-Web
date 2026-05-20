@@ -1244,7 +1244,7 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
                                         />
                                         {notificationForm.image && (
                                             <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shrink-0">
-                                                <Image src={notificationForm.image} alt="Preview" fill className="object-cover" />
+                                                <Image src={notificationForm.image} alt={`${notificationForm.title || 'New notification'} image preview`} fill className="object-cover" />
                                             </div>
                                         )}
                                     </div>

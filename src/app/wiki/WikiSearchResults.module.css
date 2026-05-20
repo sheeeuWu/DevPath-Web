@@ -1,0 +1,163 @@
+.wrapper {
+    padding: 8px 0;
+}
+
+.resultCount {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.resultCount strong {
+    color: var(--text-primary);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card {
+    width: 100%;
+    text-align: left;
+    background: var(--glass-highlight);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.card:hover {
+    border-color: rgba(0, 212, 255, 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.08);
+}
+
+.card:hover::before {
+    background: #00d4ff;
+}
+
+.cardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.category {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #00d4ff;
+    font-weight: 600;
+}
+
+.arrow {
+    color: var(--text-secondary);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+}
+
+.card:hover .arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.cardTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.cardDesc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tagIcon {
+    color: var(--text-secondary);
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+.tag {
+    font-size: 11px;
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid rgba(0, 212, 255, 0.18);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+
+/* The highlight mark */
+.highlight {
+    background: rgba(0, 212, 255, 0.22);
+    color: #00d4ff;
+    border-radius: 2px;
+    padding: 0 1px;
+    font-style: normal;
+}
+
+/* Empty state */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    gap: 10px;
+    text-align: center;
+}
+
+.emptyIcon {
+    color: var(--text-secondary);
+    opacity: 0.4;
+    margin-bottom: 4px;
+}
+
+.empty p {
+    font-size: 14px;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.empty strong {
+    color: #00d4ff;
+}
+
+.empty span {
+    font-size: 13px;
+    color: var(--text-secondary);
+}

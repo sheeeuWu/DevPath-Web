@@ -1,11 +1,14 @@
 "use client";
 import Fuse from 'fuse.js';
-import { useState, useEffect } from 'react';
-import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Wiki.module.css';
 
 import { wikiContent } from '@/data/wikiContent';
+import { wikiSearchIndex } from '@/data/wikiSearchIndex';
+import { searchArticles } from '@/utils/wikiSearch';
+import WikiSearchResults from './WikiSearchResults';
 
 const categories = [
     {
@@ -91,6 +94,30 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
     return <span style={{ whiteSpace: 'normal' }}>{result}</span>;  {/* ← wrap in span */}
 }
 
+    // Fuzzy search results (title + keywords + description)
+    const searchResults = useMemo(
+        () => searchArticles(wikiSearchIndex, searchQuery),
+        [searchQuery]
+    );
+
+    const isSearching = searchQuery.trim().length > 0;
+
+    // Sidebar nav: filter by title only when searching (lightweight)
+    const filteredCategories = isSearching
+        ? categories.map(category => ({
+            ...category,
+            items: category.items.filter(item =>
+                item.title.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        })).filter(category => category.items.length > 0)
+        : categories;
+
+    // When user clicks a search result, open that article and clear search
+    function handleResultSelect(id: string) {
+        setActiveArticle(id);
+        setSearchQuery("");
+    }
+
     useEffect(() => {
         const articleBody = document.querySelector(`.${styles.articleBody}`);
         if (!articleBody) return;
@@ -132,6 +159,7 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
     return (
         <div className={styles.container}>
             <aside className={styles.sidebar}>
+                {/* Search input */}
                 <div className={styles.searchContainer}>
                     <Search className={styles.searchIcon} size={16} />
                     <input
@@ -140,28 +168,51 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                         className={styles.searchInput}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        aria-label="Search wiki articles"
                     />
+                    {isSearching && (
+                        <button
+                            className={styles.clearSearch}
+                            onClick={() => setSearchQuery("")}
+                            aria-label="Clear search"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
                 </div>
 
-                <nav>
-                     {filteredCategories.map((category, index) => ( 
-                        <div key={index} className={styles.category}>
-                            <h3 className={styles.categoryTitle}>{category.title}</h3>
-                            {category.items.map(item => (
-                                <div
-                                    key={item.id}
-                                    className={`${styles.navLink} ${activeArticle === item.id ? styles.active : ''}`}
-                                    onClick={() => setActiveArticle(item.id)}
-                                >
-                                    {item.icon}
-                                    {highlightMatch(item.title, matchMap.get(item.id))}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </nav>
+                {/* Sidebar nav — hidden when search results are showing */}
+                {!isSearching && (
+                    <nav>
+                        {filteredCategories.map((category, index) => (
+                            <div key={index} className={styles.category}>
+                                <h3 className={styles.categoryTitle}>{category.title}</h3>
+                                {category.items.map(item => (
+                                    <div
+                                        key={item.id}
+                                        className={`${styles.navLink} ${activeArticle === item.id ? styles.active : ''}`}
+                                        onClick={() => setActiveArticle(item.id)}
+                                    >
+                                        {item.icon}
+                                        {item.title}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </nav>
+                )}
+
+                {/* Fuzzy search results in the sidebar */}
+                {isSearching && (
+                    <WikiSearchResults
+                        results={searchResults}
+                        query={searchQuery}
+                        onSelect={handleResultSelect}
+                    />
+                )}
             </aside>
 
+            {/* Main content — unchanged */}
             <main className={styles.content}>
                 <div className={styles.breadcrumb}>
                     <span>Docs</span>

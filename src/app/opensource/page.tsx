@@ -1,23 +1,131 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Github, GitMerge, Globe, BookOpen, Code2, Users, ExternalLink, Star, Check, LayoutDashboard, Clock } from 'lucide-react';
+import { Github, GitMerge, Globe, BookOpen, Code2, Users, ExternalLink, Star, Check, LayoutDashboard, Clock, GitFork } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { GithubAuthProvider, linkWithPopup } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 import GitHubDashboard from '@/components/opensource/GitHubDashboard';
 import { siteConfig } from '@/config/siteConfig';
+
+type FeaturedRepoStats = {
+    stars: number;
+    forks: number;
+    openIssues: number;
+};
+
+type FeaturedRepoStatsEntry = readonly [string, FeaturedRepoStats];
+
+type GitHubRepoApiResponse = {
+    stargazers_count?: number;
+    forks_count?: number;
+    open_issues_count?: number;
+};
+
+type GitHubProfile = {
+    login: string;
+    avatar_url?: string;
+    public_repos?: number;
+    followers?: number;
+    following?: number;
+    bio?: string | null;
+    company?: string | null;
+    location?: string | null;
+    created_at?: string;
+};
+
+type GitHubRepo = {
+    id: number | string;
+    stargazers_count?: number;
+    language?: string | null;
+};
+
+type GitHubActivityEvent = {
+    id: string;
+    type: string;
+    repo: {
+        name: string;
+    };
+    created_at: string;
+};
+
+const getGitHubRepoSlug = (url: string | null) => {
+    if (!url) return null;
+
+    try {
+        const { hostname, pathname } = new URL(url);
+        if (hostname !== 'github.com') return null;
+
+        const [owner, repo] = pathname.replace(/^\/|\/$/g, '').split('/');
+        return owner && repo ? `${owner}/${repo}` : null;
+    } catch {
+        return null;
+    }
+};
+
+const isFeaturedRepoStatsEntry = (
+    entry: FeaturedRepoStatsEntry | null
+): entry is FeaturedRepoStatsEntry => entry !== null;
 
 export default function OpenSourcePage() {
     const { user, updateUserProfile } = useAuth();
     const [connecting, setConnecting] = useState(false);
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [repoStats, setRepoStats] = useState<Record<string, FeaturedRepoStats>>({});
+    const [statsLoading, setStatsLoading] = useState(false);
 
     useEffect(() => {
         const storedToken = localStorage.getItem('github_access_token');
         if (storedToken) setAccessToken(storedToken);
+    }, []);
+
+    useEffect(() => {
+        const publicRepos = siteConfig.featuredRepos.filter(repo => repo.isPublic && getGitHubRepoSlug(repo.url));
+        if (publicRepos.length === 0) return;
+
+        let cancelled = false;
+
+        const fetchFeaturedRepoStats = async () => {
+            setStatsLoading(true);
+            const statsEntries = await Promise.all(
+                publicRepos.map(async (repo) => {
+                    const slug = getGitHubRepoSlug(repo.url);
+                    if (!slug) return null;
+
+                    try {
+                        const response = await fetch(`https://api.github.com/repos/${slug}`, {
+                            headers: { Accept: 'application/vnd.github+json' }
+                        });
+
+                        if (!response.ok) return null;
+
+                        const data = await response.json() as GitHubRepoApiResponse;
+                        return [
+                            repo.name,
+                            {
+                                stars: data.stargazers_count || 0,
+                                forks: data.forks_count || 0,
+                                openIssues: data.open_issues_count || 0
+                            }
+                        ] as FeaturedRepoStatsEntry;
+                    } catch {
+                        return null;
+                    }
+                })
+            );
+
+            if (!cancelled) {
+                setRepoStats(Object.fromEntries(statsEntries.filter(isFeaturedRepoStatsEntry)));
+                setStatsLoading(false);
+            }
+        };
+
+        fetchFeaturedRepoStats();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const handleConnectGitHub = async () => {
@@ -32,23 +140,23 @@ export default function OpenSourcePage() {
             provider.addScope('read:user');
             provider.addScope('repo');
 
-            let result;
             let token;
-            let githubUser;
 
             try {
                 // Try linking first
-                result = await linkWithPopup(auth.currentUser!, provider);
+                const result = await linkWithPopup(auth.currentUser!, provider);
                 const credential = GithubAuthProvider.credentialFromResult(result);
                 token = credential?.accessToken;
-                githubUser = result.user;
-            } catch (linkError: any) {
-                if (linkError.code === 'auth/credential-already-in-use') {
+            } catch (linkError: unknown) {
+                const authError = linkError as { code?: string };
+                if (authError.code === 'auth/credential-already-in-use') {
                     // Fallback: Connect for Data Only automatically
                     // We don't merge accounts, just use the token for fetching data.
 
                     // Try to retrieve credential from the error
-                    const credential = GithubAuthProvider.credentialFromError(linkError);
+                    const credential = GithubAuthProvider.credentialFromError(
+                        linkError as Parameters<typeof GithubAuthProvider.credentialFromError>[0]
+                    );
                     if (credential) {
                         token = credential.accessToken;
                         // We don't have the user object here, but we can fetch profile with the token
@@ -67,20 +175,20 @@ export default function OpenSourcePage() {
 
                 // Fetch Extended Data
                 const { fetchUserProfile, fetchUserRepos, fetchUserActivity, fetchRepoContributorStats, calculateUserLinesContributed } = await import('@/lib/github');
-                const profile = await fetchUserProfile(token);
-                const repos = await fetchUserRepos(token);
-                const activity = await fetchUserActivity(profile.login, token);
+                const profile = await fetchUserProfile(token) as GitHubProfile;
+                const repos = await fetchUserRepos(token) as GitHubRepo[];
+                const activity = await fetchUserActivity(profile.login, token) as GitHubActivityEvent[];
 
                 // Fetch contributor stats (lines and commits)
                 const repoStats = await fetchRepoContributorStats(token);
                 const userLineStats = calculateUserLinesContributed(repoStats, profile.login);
 
                 // Calculate Total Stars
-                const totalStars = repos.reduce((acc: number, repo: any) => acc + (repo.stargazers_count || 0), 0);
+                const totalStars = repos.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
 
                 // Calculate Top Languages
                 const languageCounts: Record<string, number> = {};
-                repos.forEach((repo: any) => {
+                repos.forEach((repo) => {
                     if (repo.language) {
                         languageCounts[repo.language] = (languageCounts[repo.language] || 0) + 1;
                     }
@@ -99,7 +207,7 @@ export default function OpenSourcePage() {
                         followers: profile.followers,
                         following: profile.following,
                         lastFetched: new Date().toISOString(),
-                        recentActivity: activity.slice(0, 5).map((event: any) => ({
+                        recentActivity: activity.slice(0, 5).map((event) => ({
                             id: event.id,
                             type: event.type,
                             repo: { name: event.repo.name, url: `https://github.com/${event.repo.name}` },
@@ -107,9 +215,9 @@ export default function OpenSourcePage() {
                         })),
                         totalStars,
                         topLanguages,
-                        bio: profile.bio,
-                        company: profile.company,
-                        location: profile.location,
+                        bio: profile.bio || undefined,
+                        company: profile.company || undefined,
+                        location: profile.location || undefined,
                         createdAt: profile.created_at,
                         linesAdded: userLineStats.additions,
                         linesRemoved: userLineStats.deletions,
@@ -134,7 +242,7 @@ export default function OpenSourcePage() {
                 const reposRef = collection(db, collectionName, docId, 'github_repos');
 
                 // Save top 10 repos for now to save writes
-                repos.slice(0, 10).forEach((repo: any) => {
+                repos.slice(0, 10).forEach((repo) => {
                     const repoDoc = doc(reposRef, repo.id.toString());
                     batch.set(repoDoc, repo);
                 });
@@ -143,9 +251,10 @@ export default function OpenSourcePage() {
                 alert("GitHub account connected successfully!");
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error connecting GitHub:", error);
-            alert("Failed to connect GitHub: " + error.message);
+            const message = error instanceof Error ? error.message : "Unknown error";
+            alert("Failed to connect GitHub: " + message);
         } finally {
             setConnecting(false);
         }
@@ -222,6 +331,7 @@ export default function OpenSourcePage() {
                                 repo.icon === 'BookOpen' ? BookOpen
                                 : repo.icon === 'Code2'   ? Code2
                                 : Globe;
+                            const liveStats = repoStats[repo.name];
 
                             return (
                                 <div
@@ -238,8 +348,17 @@ export default function OpenSourcePage() {
                                                 <p className="text-xs text-muted-foreground">{repo.description}</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-medium bg-muted px-2 py-1 rounded shrink-0">
-                                            <Star size={12} className="text-yellow-500" /> {repo.stars}
+                                        <div className="flex items-center gap-2 text-xs font-medium bg-muted px-2 py-1 rounded shrink-0">
+                                            <span className="flex items-center gap-1">
+                                                <Star size={12} className="text-yellow-500" />
+                                                {liveStats ? liveStats.stars.toLocaleString() : repo.stars}
+                                            </span>
+                                            {liveStats && (
+                                                <span className="flex items-center gap-1 text-muted-foreground">
+                                                    <GitFork size={12} />
+                                                    {liveStats.forks.toLocaleString()}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -251,6 +370,14 @@ export default function OpenSourcePage() {
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                             <span className={`w-2 h-2 rounded-full ${repo.languageColor}`}></span>
                                             {repo.language}
+                                            {liveStats && (
+                                                <span className="ml-2">
+                                                    {liveStats.openIssues.toLocaleString()} open issues
+                                                </span>
+                                            )}
+                                            {!liveStats && statsLoading && repo.isPublic && (
+                                                <span className="ml-2">Updating stats...</span>
+                                            )}
                                         </div>
 
                                         {repo.isPublic && repo.url ? (
@@ -304,7 +431,7 @@ export default function OpenSourcePage() {
                             </div>
                             <h3 className="text-xl font-bold mb-2">GitHub</h3>
                             <p className="text-muted-foreground mb-4">
-                                The world's largest platform for developer collaboration. Home to millions of open source projects.
+                                The world&apos;s largest platform for developer collaboration. Home to millions of open source projects.
                             </p>
                             <Link href="https://github.com" target="_blank" className="text-primary text-sm font-medium flex items-center gap-1 hover:underline">
                                 Visit Platform <ExternalLink size={14} />
@@ -370,7 +497,7 @@ export default function OpenSourcePage() {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-lg">Make Your First Contribution</h3>
-                                    <p className="text-muted-foreground">Start small. Fix a typo, update documentation, or tackle a "Good First Issue".</p>
+                                    <p className="text-muted-foreground">Start small. Fix a typo, update documentation, or tackle a &quot;Good First Issue&quot;.</p>
                                 </div>
                             </div>
                         </div>

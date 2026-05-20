@@ -34,7 +34,7 @@ export default function PastCollaborations() {
                         <div className="relative w-full h-full">
                             <Image
                                 src="https://res.cloudinary.com/dsj0vaews/image/upload/v1766937095/r8ra3fwkfp9n68lemuud.png"
-                                alt="Past Collaborations"
+                                alt="Logos of DevPath past collaboration partners"
                                 fill
                                 className="object-contain"
                                 unoptimized

@@ -7,7 +7,7 @@ export default function Sponsors() {
     const communitySponsors = [
         {
             name: "OSCG",
-            logo: "https://osconnect.org/oscg-logo.png", // Fallback, normally they use an external URL like the others
+            logo: "https://raw.githubusercontent.com/devpathindcommunity-india/DevPath-Web/master/src/assets/oscg26.png",
             url: "https://osconnect.org/"
         },
         {

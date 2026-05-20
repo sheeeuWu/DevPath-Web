@@ -17,11 +17,15 @@ interface GamificationNotification {
 interface GamificationContextType {
     xp: number;
     level: number;
-    addXp: (amount: number, reason: string, type?: NotificationType) => void;
+    addXp: (amount: number, reason: string, type?: NotificationType, options?: AddXpOptions) => void;
     notifications: GamificationNotification[];
 }
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
+
+interface AddXpOptions {
+    persist?: boolean;
+}
 
 const ToastMessage = ({ n, removeNotification }: { n: GamificationNotification, removeNotification: (id: number) => void }) => {
     let Icon = Zap;
@@ -127,12 +131,18 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
         setNotifications(prev => prev.filter(n => n.id !== id));
     };
 
-    const addXp = (amount: number, reason: string, type: NotificationType = 'xp') => {
+    const addXp = (
+        amount: number,
+        reason: string,
+        type: NotificationType = 'xp',
+        options: AddXpOptions = {}
+    ) => {
+        const shouldPersist = options.persist !== false;
         const newXp = xp + amount;
         const currentLevel = Math.floor(Math.sqrt(xp / 100));
         const newLevel = Math.floor(Math.sqrt(newXp / 100));
         
-        if (user) {
+        if (user && shouldPersist) {
             // Persist XP to Firestore securely for authenticated users only.
             updateUserProfile({ points: newXp }).catch(err => console.error("Failed to update XP", err));
         }
