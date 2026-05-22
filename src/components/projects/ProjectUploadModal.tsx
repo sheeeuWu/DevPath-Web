@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Upload, Plus, Trash2, Link as LinkIcon, Video, Image as ImageIcon, Globe, Save } from 'lucide-react';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, setDoc, increment } from 'firebase/firestore';
+import { collection, writeBatch, doc, serverTimestamp, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { POINTS } from '@/lib/points';
 import ReactMarkdown from 'react-markdown';
@@ -118,26 +118,23 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                 updatedAt: serverTimestamp()
             };
 
+            const batch = writeBatch(db);
+
             if (initialData?.id) {
-                // Update existing project
-                const projectDataWithTimestamp = { ...projectData, updatedAt: serverTimestamp() };
+                // --- Update existing project (atomic) ---
+                // Both the root collection and the member subcollection are updated in a
+                // single batch so neither can succeed while the other fails.
+                const rootRef = doc(db, 'projects', initialData.id);
+                const subRef  = doc(db, 'members', userId, 'projects', initialData.id);
 
-                // 1. Update in Root Collection (Main Source)
-                try {
-                    await updateDoc(doc(db, 'projects', initialData.id), projectDataWithTimestamp);
-                } catch (e) {
-                    console.warn("Could not update root doc (might not exist):", e);
-                }
-
-                // 2. Update in Subcollection (Legacy/Backup)
-                try {
-                    const subcollectionParentId = userId;
-                    await updateDoc(doc(db, 'members', subcollectionParentId, 'projects', initialData.id), projectDataWithTimestamp);
-                } catch (e) {
-                    console.warn("Could not update subcollection doc:", e);
-                }
+                batch.update(rootRef, projectData);
+                batch.update(subRef,  projectData);
             } else {
-                // Create new project
+                // --- Create new project (atomic) ---
+                // A shared document ID is generated once and used for both writes so the
+                // two collections always stay in sync.
+                const newId = doc(collection(db, 'projects')).id;
+
                 const newProjectData = {
                     ...projectData,
                     userId,
@@ -148,24 +145,23 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                     starCount: 0
                 };
 
-                // Generate ID
-                const newDocRef = doc(collection(db, 'projects'));
-                const newId = newDocRef.id;
+                const rootRef    = doc(db, 'projects', newId);
+                const subRef     = doc(db, 'members', userId, 'projects', newId);
+                const memberRef  = doc(db, 'members', userId);
 
-                // 1. Set in Root Collection
-                await setDoc(doc(db, 'projects', newId), newProjectData);
-
-                // 2. Set in Subcollection (with same ID)
-                const subcollectionParentId = userId;
-                await setDoc(doc(db, 'members', subcollectionParentId, 'projects', newId), newProjectData);
-                await updateDoc(doc(db, 'members', userId), {
-                    points: increment(POINTS.CREATE_PROJECT)
-                });
+                batch.set(rootRef,   newProjectData);
+                batch.set(subRef,    newProjectData);
+                // XP award is part of the same atomic batch — it only lands if both
+                // project writes succeed.
+                batch.update(memberRef, { points: increment(POINTS.CREATE_PROJECT) });
             }
+
+            await batch.commit();
+
             onSuccess();
             onClose();
         } catch (error) {
-            console.error("Error saving project:", error);
+            console.error('Error saving project:', error);
             alert(`Failed to save project: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setLoading(false);
