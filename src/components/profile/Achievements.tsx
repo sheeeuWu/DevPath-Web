@@ -39,7 +39,7 @@ export default function Achievements() {
         };
 
         fetchData();
-    }, [user]);
+    }, [user?.uid, user?.points]);
 
     if (!user) return null;
 
