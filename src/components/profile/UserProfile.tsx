@@ -778,14 +778,20 @@ useEffect(() => {
                                     </div>
                                 </div>
                                 {aboutTab === 'write' ? (
-                                    <textarea
-                                        value={aboutContent}
-                                        onChange={(e) => setAboutContent(e.target.value)}
-                                        className="w-full min-h-[300px] p-4 bg-background border border-border rounded-lg font-mono text-sm"
-                                        placeholder="Markdown supported..."
-                                        name="aboutContent"
-                                        id="aboutContent"
-                                    />
+                                    <div>
+                                        <textarea
+                                            value={aboutContent}
+                                            onChange={(e) => setAboutContent(e.target.value)}
+                                            maxLength={500}
+                                            className="w-full min-h-[300px] p-4 bg-background border border-border rounded-lg font-mono text-sm"
+                                            placeholder="Markdown supported..."
+                                            name="aboutContent"
+                                            id="aboutContent"
+                                        />
+                                        <p className={`text-xs text-right mt-1 ${aboutContent.length >= 480 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                            {500 - aboutContent.length} / 500 characters remaining
+                                        </p>
+                                    </div>
                                 ) : (
                                     <div className="min-h-[300px] p-4 bg-background border border-border rounded-lg">
                                         <div className="markdown-body">
