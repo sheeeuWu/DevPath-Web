@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, MapPin, ExternalLink, Clock, DollarSign, GraduationCap, Star } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 
 interface InternshipCalendarModalProps {
@@ -72,25 +72,17 @@ export function InternshipCalendarModal({ isOpen, onClose }: InternshipCalendarM
             const userRef = doc(db, 'members', user.uid);
 
             if (hasStarred) {
-                // Unstar
-                await updateDoc(resourceRef, {
-                    starCount: increment(-1)
-                });
-                await updateDoc(userRef, {
-                    starredResources: (await getDoc(userRef)).data()?.starredResources?.filter((id: string) => id !== 'Internship_Calendar_2026') || []
-                });
+                await Promise.all([
+                    updateDoc(resourceRef, { starCount: increment(-1) }),
+                    updateDoc(userRef, { starredResources: arrayRemove('Internship_Calendar_2026') })
+                ]);
                 setStarCount(prev => prev - 1);
                 setHasStarred(false);
             } else {
-                // Star
-                await updateDoc(resourceRef, {
-                    starCount: increment(1)
-                });
-                const userSnap = await getDoc(userRef);
-                const currentStarred = userSnap.data()?.starredResources || [];
-                await updateDoc(userRef, {
-                    starredResources: [...currentStarred, 'Internship_Calendar_2026']
-                });
+                await Promise.all([
+                    updateDoc(resourceRef, { starCount: increment(1) }),
+                    updateDoc(userRef, { starredResources: arrayUnion('Internship_Calendar_2026') })
+                ]);
                 setStarCount(prev => prev + 1);
                 setHasStarred(true);
             }
