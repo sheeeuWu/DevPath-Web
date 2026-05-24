@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import {writeBatch, doc, collection, serverTimestamp, increment } from 'firebase/firestore';
+import { POINTS } from '@/lib/points';
 
 interface CreateDiscussionModalProps {
     isOpen: boolean;
@@ -12,10 +13,6 @@ interface CreateDiscussionModalProps {
     userName: string;
     onSuccess: () => void;
 }
-
-    const POINTS = {
-        CREATE_DISCUSSION: 10,
-    };
 
 export default function CreateDiscussionModal({ isOpen, onClose, userId, userName, onSuccess }: CreateDiscussionModalProps) {
     const [title, setTitle] = useState('');
