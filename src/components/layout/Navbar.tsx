@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Github, LogIn, Menu, X, LogOut, Lock } from 'lucide-react';
-import logo from '@/assets/logo.webp';
+import logo from '@/assets/logo.png';
 import { useAuth } from '@/context/AuthContext';
 import { NotificationDropdown } from '@/components/NotificationDropdown';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
@@ -62,7 +62,7 @@ export default function Navbar() {
                 <nav className={styles.navbar} style={{ pointerEvents: isMaintenanceMode ? 'none' : 'auto' }} aria-label="Main navigation">
                     <Link href="/" className={styles.logo} aria-label="DevPath home">
                         <div className={styles.logoIcon}>
-                            <Image src={logo} alt="" width={32} height={32} className="rounded-full" aria-hidden="true" />
+                            <Image src={logo} alt="DevPath Logo" width={32} height={32} className="rounded-full" aria-hidden="true" />
                         </div>
                         <span className={styles.logoText}>DevPath</span>
                     </Link>
