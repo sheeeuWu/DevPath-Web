@@ -78,6 +78,9 @@
     --bg-secondary: #ffffff;
     --text-primary: #0f172a;
     --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-light: #f1f5f9;
+    --text-dark: #0f172a;
   }
 
   .dark {
@@ -127,6 +130,9 @@
     --bg-secondary: #0a0e27;
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --text-light: #e2e8f0;
+    --text-dark: #ffffff;
   }
 }
 
@@ -259,6 +265,73 @@ a {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Theme-Aware Text Color Utilities */
+.text-primary-theme {
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+}
+
+.text-secondary-theme {
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.text-muted-theme {
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.text-light-theme {
+  color: var(--text-light);
+  transition: color var(--transition-fast);
+}
+
+.text-dark-theme {
+  color: var(--text-dark);
+  transition: color var(--transition-fast);
+}
+
+/* Dark mode detection alternative for components */
+.theme-aware-gray {
+  color: #475569;
+}
+
+.dark .theme-aware-gray {
+  color: #cbd5e1;
+}
+
+.theme-aware-black {
+  color: #000;
+}
+
+.dark .theme-aware-black {
+  color: #ffffff;
+}
+
+.theme-aware-light-gray {
+  color: #a1a1aa;
+}
+
+.dark .theme-aware-light-gray {
+  color: #a1a1aa;
+}
+
+.theme-aware-subtle-gray {
+  color: #52525b;
+}
+
+.dark .theme-aware-subtle-gray {
+  color: #a1a1aa;
+}
+
+.theme-aware-dark-gray {
+  color: #71717a;
+}
+
+.dark .theme-aware-dark-gray {
+  color: #a1a1aa;
 }
 
 /* Legacy HTML Attribute Support for Markdown */

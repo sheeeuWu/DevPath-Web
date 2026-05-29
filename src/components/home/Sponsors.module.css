@@ -117,7 +117,7 @@
 }
 
 :global(html:not(.dark)) .subtitle {
-    color: #475569;
+    color: var(--text-secondary);
 }
 
 :global(html:not(.dark)) .sponsorCard {

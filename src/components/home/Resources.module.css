@@ -114,7 +114,7 @@
 
 .action:hover {
     background: var(--accent-cyan);
-    color: #000;
+    color: #0f172a;
     gap: 10px;
     transform: translateX(4px);
 }
