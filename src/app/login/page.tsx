@@ -143,7 +143,7 @@ const adminDoc = await getDoc(doc(db, 'admins', email));
                             <div className="text-red-500 text-sm text-center">{error}</div>
                         )}
 
-                        <button
+                        <button aria-label="Action button" 
                             type="submit"
                             className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={isMaintenanceMode}

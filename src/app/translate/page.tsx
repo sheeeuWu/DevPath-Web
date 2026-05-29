@@ -25,7 +25,7 @@ export default function TranslatePage() {
                     <p className={styles.subtitle}>
                         Join our translation community and make DevPath accessible to developers worldwide.
                     </p>
-                    <Button variant="primary" icon={<Languages size={20} />}>
+                    <Button aria-label="Action button"  variant="primary" icon={<Languages size={20} />}>
                         Start Translating
                     </Button>
                 </div>
@@ -59,7 +59,7 @@ export default function TranslatePage() {
                                 </div>
                             </div>
 
-                            <Button variant="secondary" className="w-full">Contribute</Button>
+                            <Button aria-label="Action button"  variant="secondary" className="w-full">Contribute</Button>
                         </div>
                     ))}
                 </div>
@@ -98,7 +98,7 @@ export default function TranslatePage() {
                     </p>
                     <div className={styles.requestForm}>
                         <input type="text" placeholder="Language Name (e.g. Italian)" className={styles.input} />
-                        <Button variant="primary" icon={<Plus size={20} />}>Request Language</Button>
+                        <Button aria-label="Action button"  variant="primary" icon={<Plus size={20} />}>Request Language</Button>
                     </div>
                 </div>
             </div>

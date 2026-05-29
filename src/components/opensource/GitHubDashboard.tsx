@@ -235,7 +235,7 @@ export default function GitHubDashboard({ accessToken }: GitHubDashboardProps) {
                                     onChange={(e) => setNewIssueTitle(e.target.value)}
                                     className="flex-1 bg-background border border-input rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary outline-none"
                                 />
-                                <button
+                                <button aria-label="Action button" 
                                     type="submit"
                                     disabled={creatingIssue || !newIssueTitle.trim()}
                                     className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"

@@ -130,7 +130,7 @@ export default function LearningPaths() {
                                 <span className={styles.studentCount}>+{path.students.toLocaleString()} enrolled</span>
                             </div>
 
-                            <Button
+                            <Button aria-label="Action button" 
                                 variant="ghost"
                                 className="!p-2"
                                 onClick={(e) => {
@@ -150,7 +150,7 @@ export default function LearningPaths() {
             {showNotifyModal && (
                 <div className={styles.modalOverlay} onClick={() => setShowNotifyModal(false)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                        <button className={styles.closeButton} onClick={() => setShowNotifyModal(false)}>×</button>
+                        <button aria-label="Action button"  className={styles.closeButton} onClick={() => setShowNotifyModal(false)}>×</button>
 
                         {!isSubmitted ? (
                             <>
@@ -168,7 +168,7 @@ export default function LearningPaths() {
                                         onChange={e => setEmail(e.target.value)}
                                         required
                                     />
-                                    <Button variant="primary" type="submit">Notify Me</Button>
+                                    <Button aria-label="Action button"  variant="primary" type="submit">Notify Me</Button>
                                 </form>
                             </>
                         ) : (
@@ -176,7 +176,7 @@ export default function LearningPaths() {
                                 <div className={styles.successIcon}>✨</div>
                                 <h3>You&apos;re on the list!</h3>
                                 <p>We&apos;ll email you when {selectedPath} is ready.</p>
-                                <Button variant="secondary" onClick={() => setShowNotifyModal(false)}>Close</Button>
+                                <Button aria-label="Action button"  variant="secondary" onClick={() => setShowNotifyModal(false)}>Close</Button>
                             </div>
                         )}
                     </div>

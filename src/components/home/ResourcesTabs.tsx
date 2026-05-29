@@ -422,7 +422,7 @@ export default function ResourcesTabs() {
                 {mainSections.map((section) => {
                     const isActive = activeMainTab === section.id;
                     return (
-                        <button
+                        <button aria-label="Action button" 
                             key={section.id}
                             onClick={() => setActiveMainTab(section.id)}
                             className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all border ${isActive
@@ -449,7 +449,7 @@ export default function ResourcesTabs() {
                                 const isActive = activeSubTab === catKey;
 
                                 return (
-                                    <button
+                                    <button aria-label="Action button" 
                                         key={catKey}
                                         onClick={() => setActiveSubTab(catKey)}
                                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden ${isActive
@@ -510,7 +510,7 @@ export default function ResourcesTabs() {
                                                     </div>
                                                     {prompt.example}
                                                 </div>
-                                                <button className="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-lg transition-colors border border-white/10 hover:border-white/20 flex items-center justify-center gap-2 group/btn">
+                                                <button aria-label="Action button"  className="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-lg transition-colors border border-white/10 hover:border-white/20 flex items-center justify-center gap-2 group/btn">
                                                     Try this Prompt
                                                     <Terminal size={14} className="group-hover/btn:text-primary transition-colors" />
                                                 </button>
@@ -583,7 +583,7 @@ export default function ResourcesTabs() {
                                                         <Star size={16} fill="currentColor" />
                                                         {resource.rating}
                                                     </div>
-                                                    <button
+                                                    <button aria-label="Action button" 
                                                         className={`${styles.action} ${resource.status === 'coming_soon' ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                         onClick={() => resource.status !== 'coming_soon' && handleAccessNow(resource)}
                                                         disabled={resource.status === 'coming_soon'}

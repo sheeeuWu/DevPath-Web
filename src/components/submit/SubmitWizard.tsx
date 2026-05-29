@@ -154,7 +154,7 @@ export default function SubmitWizard() {
                                 Your project has been successfully submitted for review.
                                 It will be live on the showcase within 24 hours.
                             </p>
-                            <Button variant="primary" className="mt-8" onClick={() => window.location.href = '/'}>
+                            <Button aria-label="Action button"  variant="primary" className="mt-8" onClick={() => window.location.href = '/'}>
                                 Return Home
                             </Button>
                         </div>
@@ -273,7 +273,7 @@ export default function SubmitWizard() {
                                             <p style={{ color: 'var(--text-secondary)', fontSize: '12px', marginBottom: '12px' }}>
                                                 {(formData.thumbnail.size / 1024).toFixed(2)} KB
                                             </p>
-                                            <button
+                                            <button aria-label="Action button" 
                                                 type="button"
                                                 onClick={handleRemoveThumbnail}
                                                 style={{
@@ -345,7 +345,7 @@ export default function SubmitWizard() {
                     )}
 
                     <div className={styles.actions}>
-                        <Button
+                        <Button aria-label="Action button" 
                             variant="ghost"
                             onClick={handleBack}
                             disabled={currentStep === 0}
@@ -353,7 +353,7 @@ export default function SubmitWizard() {
                         >
                             <ArrowLeft size={20} /> Back
                         </Button>
-                        <Button 
+                        <Button aria-label="Action button"  
                             variant="primary" 
                             onClick={handleNext}
                             disabled={isSubmitting}

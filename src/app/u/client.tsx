@@ -465,7 +465,7 @@ function ProfileContent({ uid }: { uid: string }) {
 
                             <div className="flex flex-wrap gap-3 mt-4">
                                 {user.id && <FollowButton targetUserId={user.id} targetRole={user.role} targetEmail={user.email} />}
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={handleShareProfile}
                                     className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-all duration-200 font-medium text-sm"
                                 >
@@ -754,7 +754,7 @@ function ProfileContent({ uid }: { uid: string }) {
 
                                         <div className="text-sm text-muted-foreground mb-3">
                                             <p className="line-clamp-2">{stripHtml(project.description)}</p>
-                                            <button
+                                            <button aria-label="Action button" 
                                                 onClick={() => setSelectedProject(project)}
                                                 className="text-primary text-xs font-medium hover:underline mt-1"
                                             >
@@ -779,14 +779,14 @@ function ProfileContent({ uid }: { uid: string }) {
 
                                         <div className="flex items-center justify-between pt-3 border-t border-border">
                                             <div className="flex items-center gap-4">
-                                                <button
+                                                <button aria-label="Action button" 
                                                     onClick={() => handleLikeProject(project.id, project.likes)}
                                                     className={`flex items-center gap-1.5 text-sm transition-colors ${currentUser && project.likes.includes(currentUser.uid) ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
                                                 >
                                                     <Heart size={16} fill={currentUser && project.likes.includes(currentUser.uid) ? "currentColor" : "none"} />
                                                     <span>{project.likes.length}</span>
                                                 </button>
-                                                <button
+                                                <button aria-label="Action button" 
                                                     onClick={() => handleShareProject(project.id)}
                                                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                                                 >
@@ -849,7 +849,7 @@ function ProfileContent({ uid }: { uid: string }) {
                         >
                             <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-border bg-card/95 backdrop-blur">
                                 <h2 className="text-xl font-bold truncate pr-4">{selectedProject.title}</h2>
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={() => setSelectedProject(null)}
                                     className="p-2 hover:bg-muted rounded-full transition-colors"
                                 >

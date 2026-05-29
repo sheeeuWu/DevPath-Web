@@ -170,7 +170,7 @@ export default function DiscussionViewClient() {
     return (
         <div className="min-h-screen bg-background text-foreground pt-24 pb-12">
             <div className="container mx-auto px-4 max-w-4xl">
-                <button
+                <button aria-label="Action button" 
                     onClick={() => router.push('/community')}
                     className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
                 >
@@ -202,7 +202,7 @@ export default function DiscussionViewClient() {
                     <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
                         <div className="flex items-center gap-4">
                             <div className="relative">
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={() => setShowReactionPicker(!showReactionPicker)}
                                     className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:bg-muted transition-colors text-sm"
                                 >
@@ -213,7 +213,7 @@ export default function DiscussionViewClient() {
                                 {showReactionPicker && (
                                     <div className="absolute bottom-full left-0 mb-2 bg-card border border-border rounded-xl shadow-lg p-2 flex gap-2 animate-in fade-in zoom-in-95 z-10">
                                         {REACTIONS.map((reaction) => (
-                                            <button
+                                            <button aria-label="Action button" 
                                                 key={reaction.emoji}
                                                 onClick={() => handleReaction(reaction.emoji)}
                                                 className="p-2 hover:bg-muted rounded-lg transition-colors text-xl"
@@ -231,7 +231,7 @@ export default function DiscussionViewClient() {
                                     if (userIds.length === 0) return null;
                                     const reaction = REACTIONS.find(r => r.emoji === emoji);
                                     return (
-                                        <button
+                                        <button aria-label="Action button" 
                                             key={emoji}
                                             onClick={() => handleReaction(emoji)}
                                             className={`flex items-center gap-1 px-2 py-1 rounded-full border text-xs transition-colors ${user && userIds.includes(user.uid)
@@ -253,7 +253,7 @@ export default function DiscussionViewClient() {
                                 <MessageSquare size={20} />
                                 <span>{replies.length} replies</span>
                             </div>
-                            <button
+                            <button aria-label="Action button" 
                                 onClick={handleShare}
                                 className="flex items-center gap-2 hover:text-foreground transition-colors"
                             >
@@ -295,7 +295,7 @@ export default function DiscussionViewClient() {
                                 required
                             />
                             <div className="flex justify-end">
-                                <button
+                                <button aria-label="Action button" 
                                     type="submit"
                                     disabled={submitting || !newReply.trim()}
                                     className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

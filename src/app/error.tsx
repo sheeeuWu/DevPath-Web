@@ -47,7 +47,7 @@ export default function Error({
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                    <Button 
+                    <Button aria-label="Action button"  
                         variant="primary" 
                         icon={<RotateCcw className="w-5 h-5" />}
                         className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl bg-destructive hover:bg-destructive/90 text-white"
@@ -56,7 +56,7 @@ export default function Error({
                         Try Again
                     </Button>
                     <Link href="/" passHref>
-                        <Button variant="secondary" icon={<Home className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl border-white/20 hover:bg-white/5">
+                        <Button aria-label="Action button"  variant="secondary" icon={<Home className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl border-white/20 hover:bg-white/5">
                             Return Home
                         </Button>
                     </Link>

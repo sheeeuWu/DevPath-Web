@@ -46,7 +46,7 @@ export default function RepoModal({ isOpen, onClose, repo }: RepoModalProps) {
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         >
-                            <button className={styles.closeButton} onClick={onClose}>
+                            <button aria-label="Action button"  className={styles.closeButton} onClick={onClose}>
                                 <X size={24} />
                             </button>
 
@@ -100,14 +100,14 @@ export default function RepoModal({ isOpen, onClose, repo }: RepoModalProps) {
 
                             <div className={styles.footer}>
                                 <a href={repo.link} target="_blank" rel="noopener noreferrer" className="flex-1">
-                                    <Button variant="primary" className="w-full justify-center gap-2">
+                                    <Button aria-label="Action button"  variant="primary" className="w-full justify-center gap-2">
                                         <Github size={18} />
                                         View on GitHub
                                     </Button>
                                 </a>
                                 {repo.docsLink && (
                                     <a href={repo.docsLink} target="_blank" rel="noopener noreferrer" className="flex-1">
-                                        <Button variant="secondary" className="w-full justify-center gap-2">
+                                        <Button aria-label="Action button"  variant="secondary" className="w-full justify-center gap-2">
                                             <FileText size={18} />
                                             Documentation
                                         </Button>

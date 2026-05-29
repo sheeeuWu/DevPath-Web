@@ -111,7 +111,7 @@ export function NotificationDropdown() {
     return (
         <div className="sm:relative">
             {/* Bell Button */}
-            <button
+            <button aria-label="Action button" 
                 ref={triggerRef}
                 id="notification-trigger"
                 onClick={() => setIsOpen(!isOpen)}

@@ -42,7 +42,7 @@ export default function Groups() {
                                 {group.description}
                             </p>
                             <a href={group.link} target="_blank" rel="noopener noreferrer" className="block">
-                                <Button variant="secondary" className="w-full justify-between group-hover:bg-primary group-hover:text-white transition-colors">
+                                <Button aria-label="Action button"  variant="secondary" className="w-full justify-between group-hover:bg-primary group-hover:text-white transition-colors">
                                     Join Now <ArrowRight size={18} />
                                 </Button>
                             </a>

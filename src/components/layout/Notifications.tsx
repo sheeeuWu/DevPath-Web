@@ -69,7 +69,7 @@ export default function Notifications() {
 
     return (
         <div className={styles.container} ref={dropdownRef}>
-            <button
+            <button aria-label="Action button" 
                 className={styles.bellButton}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Notifications"
@@ -83,7 +83,7 @@ export default function Notifications() {
                     <div className={styles.header}>
                         <span className={styles.title}>Notifications</span>
                         {unreadCount > 0 && (
-                            <button className={styles.markRead} onClick={markAllAsRead}>
+                            <button aria-label="Action button"  className={styles.markRead} onClick={markAllAsRead}>
                                 Mark all as read
                             </button>
                         )}

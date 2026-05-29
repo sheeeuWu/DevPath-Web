@@ -129,12 +129,12 @@ export default function Hero() {
 
                 <div className={`${styles.ctas} flex flex-col sm:flex-row items-center gap-4 sm:gap-2`}>
                     <Link href="/signup" className="w-full sm:w-auto">
-                        <Button variant="primary" icon={<ArrowRight size={20} />} className="w-full sm:w-auto justify-center">
+                        <Button aria-label="Sign Up" variant="primary" icon={<ArrowRight size={20} />} className="w-full sm:w-auto justify-center">
                             Sign Up
                         </Button>
                     </Link>
                     <Link href="https://linkly.link/2WCTY" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                        <Button variant="secondary" icon={<ArrowRight size={20} />} className="w-full sm:w-auto justify-center">
+                        <Button aria-label="Join Community" variant="secondary" icon={<ArrowRight size={20} />} className="w-full sm:w-auto justify-center">
                             Join Community
                         </Button>
                     </Link>

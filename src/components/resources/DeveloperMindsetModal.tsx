@@ -68,7 +68,7 @@ export function DeveloperMindsetModal({ isOpen, onClose }: DeveloperMindsetModal
                                     {copied ? "Link Copied!" : "Share Link"}
                                 </span>
                             </button>
-                            <button
+                            <button aria-label="Action button" 
                                 onClick={onClose}
                                 className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground"
                             >

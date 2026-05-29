@@ -166,7 +166,7 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                         aria-label="Search wiki articles"
                     />
                     {isSearching && (
-                        <button
+                        <button aria-label="Action button" 
                             className={styles.clearSearch}
                             onClick={() => setSearchQuery("")}
                             aria-label="Clear search"
@@ -241,8 +241,8 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                     <div className={styles.feedback}>
                         <span>Was this article helpful?</span>
                         <div className={styles.feedbackButtons}>
-                            <Button variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
-                            <Button variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
+                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
+                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
                         </div>
                     </div>
                 </article>

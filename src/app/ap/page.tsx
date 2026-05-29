@@ -88,7 +88,7 @@ export default function SuperAdminLogin() {
                 <Shield size={48} className="text-red-500 mb-4" />
                 <h1 className="text-2xl font-bold text-white mb-2">Restricted Access</h1>
                 <p className="text-zinc-400 mb-6 text-center max-w-sm">You must be logged in with a Super Admin account to access this page.</p>
-                <button onClick={() => router.push('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                <button aria-label="Action button"  onClick={() => router.push('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
                     Go to Login
                 </button>
             </div>
@@ -186,7 +186,7 @@ export default function SuperAdminLogin() {
                         </div>
                     )}
 
-                    <button
+                    <button aria-label="Action button" 
                         type="submit"
                         disabled={loading}
                         className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

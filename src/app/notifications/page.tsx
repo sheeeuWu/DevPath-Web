@@ -98,7 +98,7 @@ export default function NotificationsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                        <button
+                        <button aria-label="Action button" 
                             onClick={markAllAsRead}
                             className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg transition-colors text-sm font-medium"
                             disabled={notifications.every(n => n.read)}
@@ -111,7 +111,7 @@ export default function NotificationsPage() {
 
                 {/* Filters */}
                 <div className="flex gap-4 mb-6 border-b border-border">
-                    <button
+                    <button aria-label="Action button" 
                         onClick={() => setFilter('all')}
                         className={`pb-3 px-4 font-medium transition-colors relative ${filter === 'all' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
@@ -120,7 +120,7 @@ export default function NotificationsPage() {
                             <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
                         )}
                     </button>
-                    <button
+                    <button aria-label="Action button" 
                         onClick={() => setFilter('unread')}
                         className={`pb-3 px-4 font-medium transition-colors relative ${filter === 'unread' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
@@ -184,7 +184,7 @@ export default function NotificationsPage() {
                                                 </div>
                                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {!notif.read && (
-                                                        <button
+                                                        <button aria-label="Action button" 
                                                             onClick={() => markAsRead(notif.id)}
                                                             className="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"
                                                             title="Mark as read"
@@ -192,7 +192,7 @@ export default function NotificationsPage() {
                                                             <Check size={18} />
                                                         </button>
                                                     )}
-                                                    <button
+                                                    <button aria-label="Action button" 
                                                         onClick={() => deleteNotification(notif.id)}
                                                         className="p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors"
                                                         title="Delete"

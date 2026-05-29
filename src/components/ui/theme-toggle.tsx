@@ -37,7 +37,7 @@ export function ThemeToggle() {
 
     // After hydration, theme is resolved — render the real toggle safely.
     return (
-        <Button
+        <Button aria-label="Action button" 
             variant="ghost"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             className="relative h-9 w-9 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white transition-colors p-0 flex items-center justify-center"

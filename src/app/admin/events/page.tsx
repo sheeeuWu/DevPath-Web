@@ -87,7 +87,7 @@ export default function AdminEventsPage() {
         <div className="p-6 max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Manage Events</h1>
-                <button
+                <button aria-label="Action button" 
                     onClick={() => {
                         setEditingEvent(null);
                         setFormData({ title: '', description: '', date: '', registerLink: '', image: '', location: 'Online' });
@@ -131,10 +131,10 @@ export default function AdminEventsPage() {
                                     {new Date(event.date).toLocaleDateString()}
                                 </div>
                                 <div className="flex gap-2 mt-4 pt-4 border-t border-border">
-                                    <button onClick={() => handleEdit(event)} className="flex-1 flex items-center justify-center gap-1 text-sm bg-muted hover:bg-muted/80 py-2 rounded">
+                                    <button aria-label="Action button"  onClick={() => handleEdit(event)} className="flex-1 flex items-center justify-center gap-1 text-sm bg-muted hover:bg-muted/80 py-2 rounded">
                                         <Edit2 size={14} /> Edit
                                     </button>
-                                    <button onClick={() => handleDelete(event.id)} className="flex-1 flex items-center justify-center gap-1 text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 py-2 rounded">
+                                    <button aria-label="Action button"  onClick={() => handleDelete(event.id)} className="flex-1 flex items-center justify-center gap-1 text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 py-2 rounded">
                                         <Trash2 size={14} /> Delete
                                     </button>
                                 </div>
@@ -149,7 +149,7 @@ export default function AdminEventsPage() {
                     <div className="bg-card border border-border rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold">{editingEvent ? 'Edit Event' : 'New Event'}</h3>
-                            <button onClick={() => setIsModalOpen(false)}><X size={24} /></button>
+                            <button aria-label="Action button"  onClick={() => setIsModalOpen(false)}><X size={24} /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
@@ -212,8 +212,8 @@ export default function AdminEventsPage() {
                                 />
                             </div>
                             <div className="flex justify-end gap-2 pt-4">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-lg hover:bg-muted">Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">Save Event</button>
+                                <button aria-label="Action button"  type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-lg hover:bg-muted">Cancel</button>
+                                <button aria-label="Action button"  type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">Save Event</button>
                             </div>
                         </form>
                     </div>

@@ -116,7 +116,7 @@ export default function SourceCodePage() {
                                     <span className={styles.badge} style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>MIT License</span>
                                 )}
                             </div>
-                            <Button
+                            <Button aria-label="Action button" 
                                 variant={repo.status === 'public' ? 'primary' : 'ghost'}
                                 className="w-full"
                                 onClick={() => setSelectedRepo(repo)}

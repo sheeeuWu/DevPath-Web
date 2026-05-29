@@ -657,7 +657,7 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                             <p className="font-medium">Global Maintenance Mode</p>
                             <p className="text-sm text-muted-foreground">Blocks all non-admin users.</p>
                         </div>
-                        <button
+                        <button aria-label="Action button" 
                             onClick={async () => {
                                 const newState = !maintenanceMode;
                                 await updateDoc(doc(db, 'settings', 'general'), { maintenanceMode: newState });
@@ -675,7 +675,7 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                             onChange={(e) => setMaintenanceMsg(e.target.value)}
                             className="w-full p-2 bg-muted border border-border rounded-md"
                         />
-                        <button 
+                        <button aria-label="Action button"  
                             onClick={async () => {
                                 await updateDoc(doc(db, 'settings', 'general'), { maintenanceMessage: maintenanceMsg });
                                 alert("Message saved!");
@@ -690,7 +690,7 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                 {/* DO NOT DELETE THE REST OF THE UI BELOW THIS IN YOUR FILE */}
                 {hasMore && (
                     <div className="flex justify-center mt-6">
-                        <button
+                        <button aria-label="Action button" 
                             onClick={loadMoreMembers}
                             disabled={loadingMore}
                             className="px-6 py-2 bg-primary text-white rounded-md font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

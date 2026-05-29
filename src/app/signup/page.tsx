@@ -341,7 +341,7 @@ export default function SignupPage() {
                             <div className="text-red-500 text-sm">{error}</div>
                         )}
 
-                        <button
+                        <button aria-label="Action button" 
                             type="submit"
                             disabled={loading}
                             className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"

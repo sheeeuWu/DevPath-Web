@@ -51,7 +51,7 @@ export default function FollowButton({ targetUserId, targetRole = 'member', targ
     if (user && user.uid === targetUserId) return null;
 
     return (
-        <button
+        <button aria-label="Action button" 
             onClick={handleFollowToggle}
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${isFollowing

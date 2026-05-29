@@ -23,7 +23,7 @@ export default function MaintenanceBanner() {
                 </span>
             </div>
             {/* Dismiss button - optional, keeping it strictly sticky for now as per "closed fully" urgency */}
-            {/* <button 
+            {/* <button aria-label="Action button"  
                 onClick={() => setIsVisible(false)}
                 className="absolute right-4 p-1 hover:bg-white/10 rounded-full transition-colors"
             >

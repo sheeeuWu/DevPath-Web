@@ -66,7 +66,7 @@ export function ProjectCard({ project }: { project: Project }) {
 
                     {/* Stats */}
                     <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mt-4 pt-4 border-t border-black/5 dark:border-white/10">
-                        <button
+                        <button aria-label="Action button" 
                             onClick={(e) => {
                                 e.stopPropagation()
                                 setIsStarred(!isStarred)
@@ -111,7 +111,7 @@ export function ProjectCard({ project }: { project: Project }) {
                             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#0f1419] border border-black/10 dark:border-white/10 rounded-2xl p-8 z-[2000] shadow-2xl"
                         >
                             {/* Close button */}
-                            <button
+                            <button aria-label="Action button" 
                                 onClick={() => setIsModalOpen(false)}
                                 className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 flex items-center justify-center transition-colors text-gray-900 dark:text-white"
                             >
