@@ -19,7 +19,7 @@ const steps = ['Details', 'Tech Stack', 'Media', 'Review'];
 export default function SubmitWizard() {
     const [currentStep, setCurrentStep] = useState(0);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [formData, setFormData] = useState<<SubmitWizardFormData>({
+    const [formData, setFormData] = useState<SubmitWizardFormData>({
         title: '',
         description: '',
         primaryLanguage: 'JavaScript',
@@ -27,7 +27,7 @@ export default function SubmitWizard() {
         thumbnail: null,
         demoUrl: ''
     });
-    const [errors, setErrors] = useState<<Partial<<Record<<keyof SubmitWizardFormData, string>> & { submit?: string }>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof SubmitWizardFormData, string>> & { submit?: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (field: keyof SubmitWizardFormData, value: string) => {
@@ -72,7 +72,7 @@ export default function SubmitWizard() {
     };
 
     const validateStep = (step: number): boolean => {
-        const newErrors: Partial<<Record<<keyof SubmitWizardFormData, string>> = {};
+        const newErrors: Partial<Record<keyof SubmitWizardFormData, string>> = {};
         
         if (step === 0) {
             if (!formData.title.trim()) newErrors.title = 'Title is required';

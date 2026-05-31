@@ -17,7 +17,7 @@ import { useNotification } from '@/context/NotificationContext';
 import styles from './DevCard.module.css';
 
 // ── Badge registry ────────────────────────────────────────────────────────────
-const BADGE_REGISTRY: Record<string, { name: string; Icon: React.ElementType; color: string }> = {
+const BADGE_REGISTRY: Record<string, { name: string; Icon: any; color: string }> = {
   'early-adopter':     { name: 'Early Adopter',     Icon: Sparkles,    color: '#60a5fa' },
   'profile-perfect':   { name: 'Profile Perfect',   Icon: Check,       color: '#34d399' },
   'builder-1':         { name: 'Builder',            Icon: Layers,      color: '#fb923c' },
@@ -309,7 +309,7 @@ export default function DevCard({ user }: { user: any }) {
                   <Award size={11} /> Top Achievements
                 </span>
                 <div className={styles.badgesRow}>
-                  {topBadges.map((b: { id: string; name: string; Icon: React.ElementType; color: string }) => {
+                  {topBadges.map((b: { id: string; name: string; Icon: any; color: string }) => {
                     const BadgeIcon = b.Icon;
                     return (
                       <span key={b.id} className={styles.badge} style={{ borderColor: `${b.color}33` }}>

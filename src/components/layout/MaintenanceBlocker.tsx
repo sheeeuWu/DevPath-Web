@@ -6,7 +6,7 @@ import MaintenanceOverlay from "@/components/layout/MaintenanceOverlay";
 
 export default function MaintenanceBlocker({ children }: { children: React.ReactNode }) {
     const { isMaintenanceMode, loading: maintenanceLoading } = useMaintenance();
-    const { user, loading: authLoading } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
 
     // If still checking database or auth, show nothing or a tiny spinner
     if (maintenanceLoading || authLoading) return null; 

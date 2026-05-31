@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react';
 import { Github, Star, GitFork, CircleDot, CircleOff, GitPullRequest, GitPullRequestArrow, BookOpen, Plus, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
-const CircleOff = AlertCircle;
-const GitPullRequestArrow = GitPullRequest;
-
 interface Repo {
     id: number;
     name: string;

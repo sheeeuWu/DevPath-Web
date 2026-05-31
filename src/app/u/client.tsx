@@ -83,7 +83,7 @@ interface Project {
     createdAt: any;
 }
 
-function ProfileContent({ uid }: { uid: string }) {
+function ProfileContent({ uid }: { uid?: string }) {
     const { user: currentUser } = useAuth();
     const { showSuccess, showError } = useNotification();
     const [user, setUser] = useState<PublicUser | null>(null);
@@ -102,12 +102,19 @@ function ProfileContent({ uid }: { uid: string }) {
 
     useEffect(() => {
         const fetchUserAndProjects = async () => {
-            if (!uid) {
+            // Extract uid from URL if not provided via prop
+            let currentUid = uid;
+            if (!currentUid) {
+                const parts = window.location.pathname.split('/');
+                currentUid = parts[parts.length - 1];
+            }
+
+            if (!currentUid || currentUid === 'u') {
                 setError('No user specified.');
                 setLoading(false);
                 return;
             }
-            if (uid.length < 3 || uid.length > 128 || /[<>"']/.test(uid)) {
+            if (currentUid.length < 3 || currentUid.length > 128 || /[<>"']/.test(currentUid)) {
                 setError('Invalid user identifier.');
                 setLoading(false);
                 return;
@@ -117,14 +124,14 @@ function ProfileContent({ uid }: { uid: string }) {
 
             try {
                 let userData: PublicUser | undefined;
-                let userId = uid;
+                let userId = currentUid;
 
                 // 1. Try fetching by Document ID from 'members'
-                let userDoc = await getDoc(doc(db, 'members', uid));
+                let userDoc = await getDoc(doc(db, 'members', currentUid));
 
                 // 2. If not found, try fetching by 'uid' field query in 'members'
                 if (!userDoc.exists()) {
-                    const q = query(collection(db, 'members'), where('uid', '==', uid));
+                    const q = query(collection(db, 'members'), where('uid', '==', currentUid));
                     const querySnapshot = await getDocs(q);
                     if (!querySnapshot.empty) {
                         userDoc = querySnapshot.docs[0];
@@ -136,11 +143,11 @@ function ProfileContent({ uid }: { uid: string }) {
 
                 // 3. If still not found, try 'admins' collection
                 if (!userDoc.exists()) {
-                    userDoc = await getDoc(doc(db, 'admins', uid));
+                    userDoc = await getDoc(doc(db, 'admins', currentUid));
                     if (userDoc.exists()) {
                         isFromAdminCollection = true;
                     } else {
-                        const q = query(collection(db, 'admins'), where('uid', '==', uid));
+                        const q = query(collection(db, 'admins'), where('uid', '==', currentUid));
                         const querySnapshot = await getDocs(q);
                         if (!querySnapshot.empty) {
                             userDoc = querySnapshot.docs[0];
@@ -175,7 +182,7 @@ function ProfileContent({ uid }: { uid: string }) {
                         }
                         // 2. Try by UID field in admins collection (fallback)
                         if (userData.role !== 'admin') {
-                            const q = query(collection(db, 'admins'), where('uid', '==', uid));
+                            const q = query(collection(db, 'admins'), where('uid', '==', currentUid));
                             const querySnapshot = await getDocs(q);
                             if (!querySnapshot.empty) {
                                 userData.role = 'admin';

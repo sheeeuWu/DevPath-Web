@@ -69,8 +69,7 @@ export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", classNa
     }, [])
 
     const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        // Invalidate cached rect to ensure fresh calculation
-        overlayRectRef.current = null
+        // Invalidate cached rect to ensure fresh calculation (removed unused ref)
 
         // Store viewport coordinates - decoupled from element positioning
         const x = e.clientX
@@ -88,8 +87,7 @@ export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", classNa
 
     // Accessibility focus
     const handleFocus = useCallback(() => {
-        // Invalidate cached rect to ensure fresh calculation
-        overlayRectRef.current = null
+        // Invalidate cached rect to ensure fresh calculation (removed unused ref)
 
         targetRadius.current = 75
         if (overlayRef.current) {
@@ -113,8 +111,7 @@ export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", classNa
         const checkMobile = () => setIsMobile(window.innerWidth < 768)
         const handleResize = () => {
             checkMobile()
-            // Invalidate cached rect on resize since overlay position may change
-            overlayRectRef.current = null
+            // Invalidate cached rect on resize since overlay position may change (removed unused ref)
         }
 
         checkMobile()

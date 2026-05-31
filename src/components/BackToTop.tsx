@@ -4,7 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BackToTop = ():React.ReactElement | null => {
+const BackToTop = (): React.ReactElement | null => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
