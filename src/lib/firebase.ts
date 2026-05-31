@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,8 +13,27 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
-const auth = getAuth(app);
+const isFirebaseConfigValid = Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.storageBucket &&
+    firebaseConfig.messagingSenderId &&
+    firebaseConfig.appId
+);
 
-export { db, auth };
+const app: FirebaseApp | null = isFirebaseConfigValid
+    ? !getApps().length
+        ? initializeApp(firebaseConfig)
+        : getApp()
+    : null;
+
+if (!app) {
+    console.warn('Firebase is not configured. Running in local UI-only mode without Firebase auth or Firestore.');
+}
+
+const db: Firestore | null = app ? getFirestore(app) : null;
+const auth: Auth = app ? getAuth(app) : ({ currentUser: null } as Auth);
+const firebaseAvailable = Boolean(app);
+
+export { db, auth, firebaseAvailable };

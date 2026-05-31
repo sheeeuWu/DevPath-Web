@@ -48,7 +48,7 @@ export default function WikiSearchResults({ results, query, onSelect }: Props) {
 
             <div className={styles.list}>
                 {results.map(result => (
-                    <button
+                    <button aria-label="Action button" 
                         key={result.id}
                         className={styles.card}
                         onClick={() => onSelect(result.id)}

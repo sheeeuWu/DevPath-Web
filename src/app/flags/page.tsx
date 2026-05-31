@@ -223,7 +223,7 @@ export default function FlagsPage() {
                 </div>
 
                 <div className={styles.actions}>
-                    <Button variant="ghost" icon={<RotateCcw size={18} />} onClick={resetFlags}>
+                    <Button aria-label="Action button"  variant="ghost" icon={<RotateCcw size={18} />} onClick={resetFlags}>
                         Reset All
                     </Button>
                 </div>

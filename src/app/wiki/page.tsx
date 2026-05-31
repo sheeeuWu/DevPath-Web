@@ -1,4 +1,9 @@
 "use client";
+
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar } from 'lucide-react';
 import Fuse from 'fuse.js';
 import { useState, useEffect, useMemo } from 'react';
 import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar, X } from 'lucide-react';
@@ -43,6 +48,10 @@ const categories = [
     }
 ];
 
+function WikiPageContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState("");
 /**
  * Converts a kebab-case slug into a human-readable Title Case label.
  * e.g. "community-offerings" → "Community Offerings"
@@ -151,6 +160,16 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
         });
     }, [activeArticle]);
 
+    const activeArticleParam = searchParams.get('article');
+    // Ensure activeArticle is a valid article in wikiContent, otherwise default to "intro"
+    const activeArticle = activeArticleParam && wikiContent[activeArticleParam] 
+        ? activeArticleParam 
+        : "intro";
+
+    const handleArticleChange = (id: string) => {
+        router.push(`/wiki?article=${id}`, { scroll: false });
+    };
+
     return (
         <div className={styles.container}>
             <aside className={styles.sidebar}>
@@ -166,7 +185,7 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                         aria-label="Search wiki articles"
                     />
                     {isSearching && (
-                        <button
+                        <button aria-label="Action button" 
                             className={styles.clearSearch}
                             onClick={() => setSearchQuery("")}
                             aria-label="Clear search"
@@ -176,6 +195,23 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                     )}
                 </div>
 
+                <nav>
+                    {categories.map((category, index) => (
+                        <div key={index} className={styles.category}>
+                            <h3 className={styles.categoryTitle}>{category.title}</h3>
+                            {category.items.map(item => (
+                                <div
+                                    key={item.id}
+                                    className={`${styles.navLink} ${activeArticle === item.id ? styles.active : ''}`}
+                                    onClick={() => handleArticleChange(item.id)}
+                                >
+                                    {item.icon}
+                                    {item.title}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </nav>
                 {/* Sidebar nav — hidden when search results are showing */}
                 {!isSearching && (
                     <nav>
@@ -212,6 +248,9 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                 <div className={styles.breadcrumb}>
                     <span>Docs</span>
                     <ChevronRight size={14} />
+                    <span>{categories.find(c => c.items.some(i => i.id === activeArticle))?.title ?? "Getting Started"}</span>
+                    <ChevronRight size={14} />
+                    <span>{wikiContent[activeArticle]?.title ?? "Introduction to DevPath"}</span>
                     {/* Defensive: fall back to a formatted slug label if no category matches */}
                     <span>
                         {categories.find(c => c.items.some(i => i.id === activeArticle))?.title
@@ -227,10 +266,10 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
 
                 <article>
                     <div className={styles.articleHeader}>
-                        <h1 className={styles.title}>{wikiContent[activeArticle]?.title}</h1>
+                        <h1 className={styles.title}>{wikiContent[activeArticle]?.title ?? "Introduction to DevPath"}</h1>
                         <div className={styles.meta}>
-                            <span>Last updated: {wikiContent[activeArticle]?.lastUpdated}</span>
-                            <span>Reading time: {wikiContent[activeArticle]?.readingTime}</span>
+                            <span>Last updated: {wikiContent[activeArticle]?.lastUpdated ?? "Dec 14, 2025"}</span>
+                            <span>Reading time: {wikiContent[activeArticle]?.readingTime ?? "5 min"}</span>
                         </div>
                     </div>
 
@@ -241,12 +280,24 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                     <div className={styles.feedback}>
                         <span>Was this article helpful?</span>
                         <div className={styles.feedbackButtons}>
-                            <Button variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
-                            <Button variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
+                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
+                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
                         </div>
                     </div>
                 </article>
             </main>
         </div>
+    );
+}
+
+export default function WikiPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground font-medium">
+                Loading Documentation...
+            </div>
+        }>
+            <WikiPageContent />
+        </Suspense>
     );
 }

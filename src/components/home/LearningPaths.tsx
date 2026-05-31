@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Clock, BookOpen, ArrowRight, Bell } from 'lucide-react';
 import Button from '../ui/Button';
+import ShareButton from '../ui/ShareButton';
 import ComingSoonBadge from '../features/ComingSoonBadge';
 import styles from './LearningPaths.module.css';
 
@@ -65,6 +66,30 @@ export default function LearningPaths() {
     const [selectedPath, setSelectedPath] = useState<string>("");
     const [email, setEmail] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
+    
+    // Horizontal Infinite Scroll State Configuration
+    const [visibleCount, setVisibleCount] = useState(2); 
+    const observerAnchorRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const targetAnchor = observerAnchorRef.current;
+        if (!targetAnchor) return;
+
+        const scrollObserver = new IntersectionObserver((intersectEntries) => {
+            if (intersectEntries[0].isIntersecting && visibleCount < paths.length) {
+                // Smoothly load next horizontal elements block
+                setVisibleCount((prevValue) => Math.min(prevValue + 1, paths.length));
+            }
+        }, { 
+            root: targetAnchor.parentElement, // Tracks scrolling within the carousel container box
+            threshold: 0.1 
+        });
+
+        scrollObserver.observe(targetAnchor);
+        return () => {
+            if (targetAnchor) scrollObserver.unobserve(targetAnchor);
+        };
+    }, [visibleCount]);
 
     const handlePathClick = (path: Path) => {
         if (path.status === 'coming-soon') {
@@ -77,7 +102,6 @@ export default function LearningPaths() {
 
     const handleNotifySubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate API call
         setTimeout(() => {
             setIsSubmitted(true);
         }, 1000);
@@ -92,18 +116,28 @@ export default function LearningPaths() {
                 </p>
             </div>
 
-            <div className={styles.carousel}>
-                {paths.map((path, index) => (
+            <div className={styles.carousel} style={{ display: 'flex', overflowX: 'auto', gap: '16px', alignItems: 'center' }}>
+                {paths.slice(0, visibleCount).map((path, index) => (
                     <div
                         key={index}
                         className={`${styles.pathCard} ${path.status === 'coming-soon' ? styles.comingSoon : ''}`}
-                        style={{ background: path.color }}
+                        style={{ background: path.color, flexShrink: 0 }}
                         onClick={() => handlePathClick(path)}
                     >
                         {path.status === 'coming-soon' && <ComingSoonBadge />}
 
                         <div>
-                            <span className={styles.badge}>{path.difficulty}</span>
+                            <div className="flex justify-between items-center w-full mb-4">
+                                <span className={styles.badge} style={{ marginBottom: 0 }}>{path.difficulty}</span>
+                                <ShareButton 
+                                    url={`https://devpath.community/paths/${path.title.toLowerCase().replace(/\s+/g, '-')}`}
+                                    title={`${path.title} Roadmap`}
+                                    text={`Level up your skills with this ${path.title} roadmap on DevPath!`}
+                                    showLabel={false}
+                                    variant="ghost"
+                                    className="hover:bg-white/10 text-white"
+                                />
+                            </div>
                             <h3 className={styles.pathTitle}>{path.title}</h3>
 
                             <div className={styles.pathMeta}>
@@ -130,7 +164,7 @@ export default function LearningPaths() {
                                 <span className={styles.studentCount}>+{path.students.toLocaleString()} enrolled</span>
                             </div>
 
-                            <Button
+                            <Button aria-label="Action button" 
                                 variant="ghost"
                                 className="!p-2"
                                 onClick={(e) => {
@@ -145,12 +179,21 @@ export default function LearningPaths() {
                         </div>
                     </div>
                 ))}
+
+                {/* Horizontal Interceptor Trigger Target Element (placed at the right end inside the slider container) */}
+                <div ref={observerAnchorRef} style={{ width: '40px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {visibleCount < paths.length ? (
+                        <span style={{ fontSize: '20px', color: '#6B7280' }}>🔄</span>
+                    ) : (
+                        <span style={{ fontSize: '20px', color: '#10B981' }}>🎉</span>
+                    )}
+                </div>
             </div>
 
             {showNotifyModal && (
                 <div className={styles.modalOverlay} onClick={() => setShowNotifyModal(false)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                        <button className={styles.closeButton} onClick={() => setShowNotifyModal(false)}>×</button>
+                        <button aria-label="Action button"  className={styles.closeButton} onClick={() => setShowNotifyModal(false)}>×</button>
 
                         {!isSubmitted ? (
                             <>
@@ -168,7 +211,7 @@ export default function LearningPaths() {
                                         onChange={e => setEmail(e.target.value)}
                                         required
                                     />
-                                    <Button variant="primary" type="submit">Notify Me</Button>
+                                    <Button aria-label="Action button"  variant="primary" type="submit">Notify Me</Button>
                                 </form>
                             </>
                         ) : (
@@ -176,7 +219,7 @@ export default function LearningPaths() {
                                 <div className={styles.successIcon}>✨</div>
                                 <h3>You&apos;re on the list!</h3>
                                 <p>We&apos;ll email you when {selectedPath} is ready.</p>
-                                <Button variant="secondary" onClick={() => setShowNotifyModal(false)}>Close</Button>
+                                <Button aria-label="Action button"  variant="secondary" onClick={() => setShowNotifyModal(false)}>Close</Button>
                             </div>
                         )}
                     </div>
@@ -185,3 +228,4 @@ export default function LearningPaths() {
         </section>
     );
 }
+

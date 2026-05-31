@@ -284,7 +284,7 @@ export default function OpenSourcePage() {
                                     <Check size={20} /> GitHub Connected as {user.githubStats.username}
                                 </div>
                                 {!accessToken && (
-                                    <button
+                                    <button aria-label="Action button" 
                                         onClick={handleConnectGitHub}
                                         className="text-sm text-muted-foreground hover:text-primary underline"
                                     >
@@ -293,7 +293,7 @@ export default function OpenSourcePage() {
                                 )}
                             </div>
                         ) : (
-                            <button
+                            <button aria-label="Action button" 
                                 onClick={handleConnectGitHub}
                                 disabled={connecting}
                                 className="flex items-center gap-2 px-6 py-3 bg-[#24292e] text-white rounded-full hover:bg-[#2f363d] transition-colors font-medium disabled:opacity-50"

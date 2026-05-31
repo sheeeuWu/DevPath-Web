@@ -49,6 +49,14 @@ const getFirestore = () => {
   return adminClient.firestore();
 };
 
+// Helper function to initialize and get the Firebase Auth Admin module
+const getAuth = () => {
+  const adminClient = initFirebaseAdmin();
+  return adminClient.auth();
+};
+
+// Exporting the modules so they can be securely used across backend routes
 module.exports = {
   getFirestore,
+  getAuth,
 };

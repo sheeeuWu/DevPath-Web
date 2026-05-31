@@ -47,8 +47,6 @@
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    --gradient-secondary: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-    --gradient-glow: radial-gradient(circle at center, rgba(0, 212, 255, 0.15), transparent 70%);
 
     /* Glassmorphism Premium */
     /* Glassmorphism Premium (Light) */
@@ -58,14 +56,6 @@
     --glass-blur: 20px;
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
     --icon-glow: rgba(0, 0, 0, 0.1);
-
-    /* Spacing */
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
-    --spacing-xxl: 48px;
 
     /* Animation */
     --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
@@ -169,23 +159,7 @@ a {
   text-decoration: none;
 }
 
-/* Premium Utilities */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
 
-.text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: gradient-flow 5s linear infinite;
-}
 
 .container {
   max-width: 1400px;
@@ -193,48 +167,6 @@ a {
   padding: 0 24px;
 }
 
-/* Animations */
-@keyframes gradient-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-@keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(0, 212, 255, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
-  }
-}
 
 /* Scrollbar */
 ::-webkit-scrollbar {
@@ -417,8 +349,4 @@ a {
 
 .markdown-body [width] {
   width: auto;
-}
-/* GSSoC'26 Issue #31: Fix abrupt page snap when navigating mobile anchor links */
-html {
-  scroll-behavior: smooth !important;
 }

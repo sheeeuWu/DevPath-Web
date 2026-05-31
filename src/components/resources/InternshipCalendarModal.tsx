@@ -123,7 +123,7 @@ export function InternshipCalendarModal({ isOpen, onClose }: InternshipCalendarM
                                             <Calendar className="text-primary" />
                                             2026 Internship Calendar
                                         </h2>
-                                        <button
+                                        <button aria-label="Action button" 
                                             onClick={handleStar}
                                             className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-all ${hasStarred
                                                 ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'
@@ -138,7 +138,7 @@ export function InternshipCalendarModal({ isOpen, onClose }: InternshipCalendarM
                                         Curated list of top internship opportunities for 2026 batch.
                                     </p>
                                 </div>
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={onClose}
                                     className="ml-4 p-2 hover:bg-white/10 rounded-lg transition-colors text-white/70 hover:text-white"
                                 >
@@ -148,7 +148,7 @@ export function InternshipCalendarModal({ isOpen, onClose }: InternshipCalendarM
 
                             {/* Tabs */}
                             <div className="flex gap-2 px-6 pt-4 border-b border-white/10">
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={() => setActiveTab('summer')}
                                     className={`px-4 py-2 rounded-t-lg font-medium transition-all ${activeTab === 'summer'
                                         ? 'bg-primary text-white'
@@ -157,7 +157,7 @@ export function InternshipCalendarModal({ isOpen, onClose }: InternshipCalendarM
                                 >
                                     Summer Internships (May–July 2026)
                                 </button>
-                                <button
+                                <button aria-label="Action button" 
                                     onClick={() => setActiveTab('winter')}
                                     className={`px-4 py-2 rounded-t-lg font-medium transition-all ${activeTab === 'winter'
                                         ? 'bg-primary text-white'

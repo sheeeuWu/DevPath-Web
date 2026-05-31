@@ -34,12 +34,12 @@ export default function NotFound() {
                 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Link href="/" passHref>
-                        <Button variant="primary" icon={<Home className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl">
+                        <Button aria-label="Action button"  variant="primary" icon={<Home className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl">
                             Back to Safety
                         </Button>
                     </Link>
                     <Link href="/courses" passHref>
-                        <Button variant="secondary" icon={<Map className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl border-white/20 hover:bg-white/5">
+                        <Button aria-label="Action button"  variant="secondary" icon={<Map className="w-5 h-5" />} className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl border-white/20 hover:bg-white/5">
                             Explore Courses
                         </Button>
                     </Link>

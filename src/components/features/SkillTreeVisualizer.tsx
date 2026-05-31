@@ -36,13 +36,13 @@ export default function SkillTreeVisualizer() {
   return (
     <div className={styles.container}>
       <div className={styles.controls}>
-        <button 
+        <button aria-label="Action button"  
           className={`${styles.pathBtn} ${activePath === "Frontend" ? styles.active : ""}`}
           onClick={() => setActivePath("Frontend")}
         >
           Frontend Path
         </button>
-        <button 
+        <button aria-label="Action button"  
           className={`${styles.pathBtn} ${activePath === "Backend" ? styles.active : ""}`}
           onClick={() => setActivePath("Backend")}
         >
@@ -87,7 +87,7 @@ export default function SkillTreeVisualizer() {
         <div className={`${styles.drawer} ${selectedNode ? styles.open : ""}`}>
           {selectedNode && (
             <>
-              <button className={styles.closeBtn} onClick={() => setSelectedNode(null)}>✖</button>
+              <button aria-label="Action button"  className={styles.closeBtn} onClick={() => setSelectedNode(null)}>✖</button>
               <h2 className={styles.drawerTitle}>{selectedNode.label}</h2>
               <p className={styles.drawerDesc}>{selectedNode.desc}</p>
             </>

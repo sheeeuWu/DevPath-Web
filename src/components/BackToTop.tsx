@@ -1,9 +1,10 @@
 "use client";
 
+import React from "react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BackToTop = () => {
+const BackToTop = (): React.ReactElement | null => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -16,10 +17,7 @@ const BackToTop = () => {
     };
 
     window.addEventListener("scroll", toggleVisibility);
-
-    return () => {
-      window.removeEventListener("scroll", toggleVisibility);
-    };
+    return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
   const scrollToTop = (): void => {
@@ -32,17 +30,22 @@ const BackToTop = () => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.button
-          onClick={scrollToTop}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-28 right-11 z-50 rounded-full border border-cyan-200/70 bg-cyan-600 px-4 py-3 text-white shadow-lg shadow-cyan-900/30 transition hover:scale-105 hover:bg-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-cyan-300/30 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:focus-visible:ring-offset-[#0a0e27]"
-          aria-label="Back to Top"
-        >
-          ↑
-        </motion.button>
+        <div className="fixed bottom-28 right-11 z-50">
+          <motion.button
+            onClick={scrollToTop}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative group bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-3 rounded-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/50 transition-all duration-300"
+            aria-label="Back to Top"
+          >
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-30 group-hover:animate-ping transition-opacity" />
+            ↑
+          </motion.button>
+        </div>
       )}
     </AnimatePresence>
   );

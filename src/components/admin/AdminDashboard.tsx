@@ -657,10 +657,15 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                             <p className="font-medium">Global Maintenance Mode</p>
                             <p className="text-sm text-muted-foreground">Blocks all non-admin users.</p>
                         </div>
-                        <button
+                        <button aria-label="Action button" 
                             onClick={async () => {
-                                const newState = !maintenanceMode;
-                                await updateDoc(doc(db, 'settings', 'general'), { maintenanceMode: newState });
+                                try {
+                                    const newState = !maintenanceMode;
+                                    await updateDoc(doc(db, 'settings', 'general'), { maintenanceMode: newState });
+                                } catch (error) {
+                                    console.error("Error toggling maintenance mode:", error);
+                                    alert("Failed to toggle maintenance mode.");
+                                }
                             }}
                             className={`px-6 py-2 rounded-md font-bold ${maintenanceMode ? 'bg-red-500 text-white' : 'bg-green-600 text-white'}`}
                         >
@@ -675,10 +680,15 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                             onChange={(e) => setMaintenanceMsg(e.target.value)}
                             className="w-full p-2 bg-muted border border-border rounded-md"
                         />
-                        <button 
+                        <button aria-label="Action button"  
                             onClick={async () => {
-                                await updateDoc(doc(db, 'settings', 'general'), { maintenanceMessage: maintenanceMsg });
-                                alert("Message saved!");
+                                try {
+                                    await updateDoc(doc(db, 'settings', 'general'), { maintenanceMessage: maintenanceMsg });
+                                    alert("Message saved!");
+                                } catch (error) {
+                                    console.error("Error saving maintenance message:", error);
+                                    alert("Failed to save maintenance message.");
+                                }
                             }}
                             className="mt-2 text-sm bg-primary text-white px-4 py-1 rounded"
                         >
@@ -690,7 +700,7 @@ export default function AdminDashboard({ initialAuth = false }: { initialAuth?: 
                 {/* DO NOT DELETE THE REST OF THE UI BELOW THIS IN YOUR FILE */}
                 {hasMore && (
                     <div className="flex justify-center mt-6">
-                        <button
+                        <button aria-label="Action button" 
                             onClick={loadMoreMembers}
                             disabled={loadingMore}
                             className="px-6 py-2 bg-primary text-white rounded-md font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

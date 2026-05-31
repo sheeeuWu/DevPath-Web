@@ -1,21 +1,15 @@
-import MaintenanceBlocker from '@/components/layout/MaintenanceBlocker';
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Barlow_Condensed } from "next/font/google";
-import Navbar from "@/components/layout/Navbar";
-import FooterWrapper from "@/components/layout/FooterWrapper";
 import { AuthProvider } from "@/context/AuthContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { RealTimeProvider } from "@/context/RealTimeContext";
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 
-import MaintenanceBanner from '@/components/layout/MaintenanceBanner';
 import BackgroundMesh from '@/components/layout/BackgroundMesh';
-import PageWrapper from '@/components/layout/PageWrapper';
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { FloatingAssistant } from "@/components/assistant/floating-assistant";
 import { NotificationProvider } from "@/context/NotificationContext";
-import { ToastContainer } from "@/components/ui/ToastContainer";
 import { SyncErrorListener } from "@/components/providers/sync-error-listener";
+import RouteAwareChrome from '@/components/layout/RouteAwareChrome';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
@@ -123,19 +117,9 @@ export default function RootLayout({
                   <RealTimeProvider>
                     <AnimatedBackground />
                     {/* <BackgroundMesh /> */}
-                    <MaintenanceBanner />
-                    <Navbar />
-                    
-                    {/* YAHAN HUMNE BLOCKER ADD KIYA HAI */}
-                    <MaintenanceBlocker>
-                      <PageWrapper>
-                        {children}
-                      </PageWrapper>
-                    </MaintenanceBlocker>
-                    
-                    <FooterWrapper />
-                    <FloatingAssistant />
-                    <ToastContainer />
+                    <RouteAwareChrome>
+                      {children}
+                    </RouteAwareChrome>
                   </RealTimeProvider>
                 </GamificationProvider>
               </AuthProvider>

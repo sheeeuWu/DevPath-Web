@@ -183,7 +183,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
             <div className="bg-card w-full max-w-2xl rounded-xl border border-border shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-4 border-b border-border">
                     <h2 className="text-xl font-bold">{initialData ? 'Edit Project' : 'Add New Project'}</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+                    <button aria-label="Action button"  onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
                         <X size={20} />
                     </button>
                 </div>
@@ -206,14 +206,14 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                             <div className="flex justify-between items-center mb-2">
                                 <label className="block text-sm font-medium">Description</label>
                                 <div className="flex bg-muted rounded-lg p-1">
-                                    <button
+                                    <button aria-label="Action button" 
                                         type="button"
                                         onClick={() => setDescTab('write')}
                                         className={`px-3 py-1 text-xs rounded-md transition-all ${descTab === 'write' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
                                         Write
                                     </button>
-                                    <button
+                                    <button aria-label="Action button" 
                                         type="button"
                                         onClick={() => setDescTab('preview')}
                                         className={`px-3 py-1 text-xs rounded-md transition-all ${descTab === 'preview' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
@@ -264,7 +264,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                                 {skills.map(skill => (
                                     <span key={skill} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center gap-1">
                                         {skill}
-                                        <button type="button" onClick={() => handleRemoveSkill(skill)} className="hover:text-red-500">
+                                        <button aria-label="Action button"  type="button" onClick={() => handleRemoveSkill(skill)} className="hover:text-red-500">
                                             <X size={14} />
                                         </button>
                                     </span>
@@ -287,7 +287,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                             {showSkillSuggestions && skillInput && filteredSkills.length > 0 && (
                                 <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                                     {filteredSkills.map(skill => (
-                                        <button
+                                        <button aria-label="Action button" 
                                             key={skill}
                                             type="button"
                                             onClick={() => handleAddSkill(skill)}
@@ -303,7 +303,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                         <div>
                             <label className="block text-sm font-medium mb-3">Project Media</label>
                             <div className="flex gap-4 mb-4">
-                                <button
+                                <button aria-label="Action button" 
                                     type="button"
                                     onClick={() => setMediaType('images')}
                                     className={`flex-1 py-2 px-4 rounded-lg border flex items-center justify-center gap-2 transition-colors ${mediaType === 'images'
@@ -313,7 +313,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                                 >
                                     <ImageIcon size={18} /> Screenshots
                                 </button>
-                                <button
+                                <button aria-label="Action button" 
                                     type="button"
                                     onClick={() => setMediaType('video')}
                                     className={`flex-1 py-2 px-4 rounded-lg border flex items-center justify-center gap-2 transition-colors ${mediaType === 'video'
@@ -339,7 +339,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                                             placeholder="https://example.com/image.png"
                                             disabled={screenshots.length >= 5}
                                         />
-                                        <button
+                                        <button aria-label="Action button" 
                                             type="button"
                                             onClick={handleAddScreenshot}
                                             disabled={!screenshotInput || screenshots.length >= 5}
@@ -354,7 +354,7 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                                             {screenshots.map((url, index) => (
                                                 <div key={index} className="relative group aspect-video bg-muted rounded-lg overflow-hidden border border-border">
                                                     <Image src={url} alt={`Screenshot ${index + 1}`} fill className="object-cover" />
-                                                    <button
+                                                    <button aria-label="Action button" 
                                                         type="button"
                                                         onClick={() => handleRemoveScreenshot(index)}
                                                         className="absolute top-1 right-1 p-1 bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -387,14 +387,14 @@ export default function ProjectUploadModal({ isOpen, onClose, userId, userEmail,
                         </div>
 
                         <div className="pt-4 flex justify-end gap-3">
-                            <button
+                            <button aria-label="Action button" 
                                 type="button"
                                 onClick={onClose}
                                 className="px-6 py-2 rounded-lg hover:bg-muted transition-colors"
                             >
                                 Cancel
                             </button>
-                            <button
+                            <button aria-label="Action button" 
                                 type="submit"
                                 disabled={loading}
                                 className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"

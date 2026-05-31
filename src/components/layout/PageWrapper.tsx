@@ -10,13 +10,14 @@ export default function PageWrapper({
     const pathname = usePathname();
     const isHome = pathname === "/";
     const isTeam = pathname === "/team";
+    const isAuthRoute = pathname === "/login" || pathname === "/signup";
 
     return (
         <main
             style={{
                 position: "relative",
                 // zIndex: 1, // Removed to prevent stacking context issue with modals
-                paddingTop: isHome ? 0 : isTeam ? "0px" : "150px",
+                paddingTop: isHome || isTeam ? 0 : isAuthRoute ? "72px" : "150px",
             }}
         >
             {children}

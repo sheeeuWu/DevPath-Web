@@ -48,7 +48,6 @@ function Model({ color }: { color: string }) {
                 const box = mesh.geometry.boundingBox!;
                 const size = new THREE.Vector3();
                 box.getSize(size);
-                // Use diagonal length as a proxy for size to handle flat objects better
                 const diagonal = size.length();
 
                 if (diagonal > maxVolume) {
@@ -58,18 +57,24 @@ function Model({ color }: { color: string }) {
             }
         });
 
+        // Collect created materials so we can dispose on cleanup
+        const createdMaterials: THREE.MeshStandardMaterial[] = [];
+
         // Second pass: apply materials
         scene.traverse((child) => {
             if ((child as THREE.Mesh).isMesh) {
                 const mesh = child as THREE.Mesh;
                 const isBackground = mesh.uuid === largestMeshId;
 
-                // Background: Dark Blue Front (#0B1120), Gold Side (#FFB800)
-                // D/Content: White Front (#FFFFFF), White Side (#FFFFFF)
                 const frontColor = isBackground ? '#0B1120' : '#FFFFFF';
                 const sideColor = isBackground ? color : '#FFFFFF';
 
-                // Clone material to avoid affecting other instances if any
+                // Dispose old material before replacing to free GPU memory
+                if (mesh.material) {
+                    const old = mesh.material as THREE.Material;
+                    old.dispose();
+                }
+
                 const material = new THREE.MeshStandardMaterial({
                     color: new THREE.Color(sideColor),
                     roughness: 0.2,
@@ -111,8 +116,14 @@ function Model({ color }: { color: string }) {
                 };
 
                 mesh.material = material;
+                createdMaterials.push(material);
             }
         });
+
+        // Cleanup: dispose all materials we created when color/scene changes or on unmount
+        return () => {
+            createdMaterials.forEach((mat) => mat.dispose());
+        };
     }, [scene, color]);
 
     return (
@@ -153,6 +164,21 @@ function FallbackGeometry({ color }: { color: string }) {
             meshRef.current.rotation.x += (targetRotationX - meshRef.current.rotation.x) * delta * 4;
         }
     });
+
+    // Dispose geometry and material on unmount to free WebGL resources
+    useEffect(() => {
+        const mesh = meshRef.current;
+        return () => {
+            if (mesh) {
+                mesh.geometry.dispose();
+                if (Array.isArray(mesh.material)) {
+                    mesh.material.forEach((m) => m.dispose());
+                } else {
+                    mesh.material.dispose();
+                }
+            }
+        };
+    }, []);
 
     return (
         <mesh ref={meshRef} position={[0, 0.4, 0]}>

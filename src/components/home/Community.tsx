@@ -25,7 +25,7 @@ export default function Community() {
                         rel="noopener noreferrer"
                         style={{ textDecoration: 'none' }}
                     >
-                        <Button variant="primary" icon={<MessageCircle size={20} />}>
+                        <Button aria-label="Action button"  variant="primary" icon={<MessageCircle size={20} />}>
                             Join DevPath Community
                         </Button>
                     </a>

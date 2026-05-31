@@ -85,9 +85,12 @@ service cloud.firestore {
       }
 
       // Badges Subcollection
+      // Badge grants must come from trusted backend (Cloud Functions / Admin SDK).
+      // Self-writes are intentionally denied to prevent users from awarding
+      // themselves arbitrary badges without meeting the criteria.
       match /badges/{badgeId} {
         allow read: if true;
-        allow write: if isSuperAdmin() || (request.auth != null && request.auth.uid == userId);
+        allow write: if isSuperAdmin();
       }
 
       // GitHub Repos Subcollection
@@ -113,12 +116,20 @@ service cloud.firestore {
     }
 
     // Leaderboard collection
+    // The broad allow write clause has been removed. It was evaluated first by
+    // Firestore's OR logic, making the field-restricted allow update below it
+    // completely unreachable, and letting any owner set arbitrary point values.
     match /leaderboard/{userId} {
       allow read: if true;
-      allow write: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin(); // Owner or Super Admin can write
-      allow update: if request.auth != null && request.auth.uid == userId && (
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']))
-      );
+
+      // Only a superadmin (backend / Admin SDK) may create or delete entries.
+      allow create, delete: if isSuperAdmin();
+
+      // Owners may only touch the 'points' field. All other leaderboard
+      // mutations must go through the trusted backend.
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']);
     }
 
     // Resources collection

@@ -1,0 +1,24 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    image: devpath-web:dev
+    container_name: devpath-web
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - next_cache:/app/.next
+    command: npm run dev -- --hostname 0.0.0.0
+
+volumes:
+  node_modules:
+  next_cache:

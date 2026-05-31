@@ -150,7 +150,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
 
                 {/* Overlay Actions */}
                 {isOwner && (
-                    <button
+                    <button aria-label="Action button" 
                         onClick={(e) => {
                             e.stopPropagation();
                             onEdit?.(project);
@@ -185,7 +185,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                     <p className="text-xs text-primary font-medium">by {project.authorName || 'Anonymous'}</p>
 
                     {/* Star Button */}
-                    <button
+                    <button aria-label="Action button" 
                         onClick={handleToggleStar}
                         disabled={isStarring}
                         className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full transition-colors ${hasStarred
@@ -221,7 +221,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                     </p>
                 </div>
 
-                <button
+                <button aria-label="Action button" 
                     onClick={() => onReadMore ? onReadMore(project) : setShowFullDescription(!showFullDescription)}
                     className="text-xs text-primary hover:underline mt-auto self-start"
                 >

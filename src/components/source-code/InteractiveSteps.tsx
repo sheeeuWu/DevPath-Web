@@ -118,7 +118,7 @@ export default function InteractiveSteps() {
                             <span className={styles.prompt}>$</span>
                             <code className={styles.command}>{steps[activeStep].command}</code>
                             {steps[activeStep].id !== 1 && (
-                                <button
+                                <button aria-label="Action button" 
                                     className={styles.copyButton}
                                     onClick={() => handleCopy(steps[activeStep].command)}
                                 >

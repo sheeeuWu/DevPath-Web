@@ -62,7 +62,7 @@ export default function UpdaterPage() {
                         You&apos;re up to date!
                     </div>
 
-                    <Button
+                    <Button aria-label="Action button" 
                         variant="primary"
                         icon={<RefreshCw size={18} className={isChecking ? 'animate-spin' : ''} />}
                         onClick={handleCheckUpdate}

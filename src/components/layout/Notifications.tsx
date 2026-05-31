@@ -72,7 +72,7 @@ export default function Notifications() {
             <button
                 className={styles.bellButton}
                 onClick={() => setIsOpen(!isOpen)}
-                aria-label="Notifications"
+                aria-label="Toggle notifications"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
@@ -83,7 +83,7 @@ export default function Notifications() {
                     <div className={styles.header}>
                         <span className={styles.title}>Notifications</span>
                         {unreadCount > 0 && (
-                            <button className={styles.markRead} onClick={markAllAsRead}>
+                            <button className={styles.markRead} onClick={markAllAsRead} aria-label="Mark all notifications as read">
                                 Mark all as read
                             </button>
                         )}

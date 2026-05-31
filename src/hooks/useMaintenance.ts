@@ -16,6 +16,15 @@ export function useMaintenance() {
     });
 
     useEffect(() => {
+        if (!db) {
+            setState({
+                isMaintenanceMode: false,
+                maintenanceMessage: '',
+                loading: false,
+            });
+            return;
+        }
+
         // Subscribe to real-time updates from Firestore
         const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (doc) => {
             if (doc.exists()) {

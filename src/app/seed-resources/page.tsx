@@ -27,7 +27,7 @@ export default function SeedResourcesPage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white gap-4">
             <h1 className="text-2xl font-bold">Seed Resources</h1>
             <p>Status: {status}</p>
-            <button
+            <button aria-label="Action button" 
                 onClick={seedInternships}
                 className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
             >

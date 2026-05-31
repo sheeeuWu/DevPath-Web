@@ -69,17 +69,19 @@ export default function ParticleSystem() {
             animationFrameId = requestAnimationFrame(drawParticles);
         };
 
-        window.addEventListener('resize', () => {
+        const handleResize = () => {
             resizeCanvas();
             createParticles();
-        });
+        };
+
+        window.addEventListener('resize', handleResize);
 
         resizeCanvas();
         createParticles();
         drawParticles();
 
         return () => {
-            window.removeEventListener('resize', resizeCanvas);
+            window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationFrameId);
         };
     }, []);

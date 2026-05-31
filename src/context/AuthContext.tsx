@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, firebaseAvailable } from '@/lib/firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User as FirebaseUser, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { leaderboardSyncErrorEmitter } from '@/lib/leaderboard-sync-error';
@@ -34,6 +34,9 @@ interface User {
         showRewards?: boolean;
         isPublic?: boolean;
         showInCommunity?: boolean;
+    };
+    preferences?: {
+        theme?: 'light' | 'dark';
     };
     points?: number;
     achievements?: string[]; // Array of achievement IDs
@@ -97,12 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isAdminVerified, setIsAdminVerified] = useState(false);
     const unsubscribeSnapshot = useRef<(() => void) | null>(null);
-
+    const firebaseReady = firebaseAvailable && auth && db;
 
     const SUPER_ADMIN_EMAIL = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || 'devpathind.community@gmail.com';
 
 
     useEffect(() => {
+        if (!firebaseReady) {
+            setIsLoading(false);
+            return;
+        }
+
         // Ensure persistence is set to local
         setPersistence(auth, browserLocalPersistence).catch((error) => {
             console.error("Error setting persistence:", error);
@@ -189,6 +197,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                                     showRewards: true,
                                     isPublic: true,
                                     showInCommunity: true
+                                },
+                                preferences: {
+                                    theme: 'dark'
                                 },
                                 githubStats: {
                                     connected: false,
@@ -335,6 +346,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const login = async (email: string, pass: string) => {
+        if (!firebaseReady) {
+            throw new Error('Firebase is not configured. Login is unavailable in local UI-only mode.');
+        }
+
         // Generate Session ID
         const sessionId = crypto.randomUUID();
         localStorage.setItem('devpath_session_id', sessionId);
@@ -367,11 +382,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = async () => {
         localStorage.removeItem('devpath_session_id');
         setIsAdminVerified(false);
+        if (!firebaseReady) return;
         await signOut(auth);
     };
 
     const updateUserProfile = async (data: Partial<User>) => {
-        if (!user || !auth.currentUser) return;
+        if (!firebaseReady || !user || !auth.currentUser) return;
         if (user.email === SUPER_ADMIN_EMAIL) return; // Super Admin Guard
 
         try {
@@ -412,7 +428,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const awardPoints = async (pointsDelta: number) => {
-        if (!user || !auth.currentUser) return;
+        if (!firebaseReady || !user || !auth.currentUser) return;
         if (user.email === SUPER_ADMIN_EMAIL) return; // Super Admin Guard
         if (!Number.isFinite(pointsDelta) || pointsDelta === 0) return;
 
@@ -450,7 +466,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const followUser = async (targetUserId: string, targetRole: string = 'member', targetEmail?: string) => {
-        if (!user) return;
+        if (!firebaseReady || !user) return;
         if (user.uid === targetUserId) return; // Cannot follow self
         if (user.following?.includes(targetUserId)) return; // Prevent double follow
 
@@ -514,7 +530,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const unfollowUser = async (targetUserId: string, targetRole: string = 'member', targetEmail?: string) => {
-        if (!user) return;
+        if (!firebaseReady || !user) return;
         if (user.email === SUPER_ADMIN_EMAIL) return; // Super Admin Guard
         try {
             const batch = (await import('firebase/firestore')).writeBatch(db);
@@ -575,7 +591,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const followCommunity = async () => {
-        if (!user) return;
+        if (!firebaseReady || !user) return;
         if (user.email === SUPER_ADMIN_EMAIL) return; // Super Admin Guard
         // Check if already followed (using a flag or badge)
         if (user.achievements?.includes('community_follower')) return;
