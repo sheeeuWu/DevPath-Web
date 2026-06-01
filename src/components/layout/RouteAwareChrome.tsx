@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import MaintenanceBlocker from '@/components/layout/MaintenanceBlocker';
 import MaintenanceBanner from '@/components/layout/MaintenanceBanner';
+import OfflineBanner from '@/components/layout/OfflineBanner';
 import Navbar from '@/components/layout/Navbar';
 import FooterWrapper from '@/components/layout/FooterWrapper';
 import PageWrapper from '@/components/layout/PageWrapper';
@@ -16,6 +17,7 @@ export default function RouteAwareChrome({ children }: { children: React.ReactNo
 
     return (
         <>
+            <OfflineBanner />
             {!isAuthRoute && <MaintenanceBanner />}
             <Navbar />
 
