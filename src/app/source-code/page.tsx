@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, ReactNode } from 'react';
-import { Github, Star, GitFork, CircleDot, ExternalLink, Copy, Code, FileText, Smartphone } from 'lucide-react';
+import { Github, Star, GitFork, CircleDot, ExternalLink, Code, FileText, Smartphone } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import CodeBlock from '@/components/common/CodeBlock';
 import InteractiveSteps from '@/components/source-code/InteractiveSteps';
 import RepoModal from '@/components/source-code/RepoModal';
 import styles from './SourceCode.module.css';
@@ -131,6 +132,20 @@ export default function SourceCodePage() {
                 <div className={styles.quickStart}>
                     <h2 className={styles.sectionTitle}>How to Contribute</h2>
                     <InteractiveSteps />
+                </div>
+
+                <div className={styles.quickStart}>
+                    <h2 className={styles.sectionTitle}>Quick Start Snippet</h2>
+                    <p className={styles.subtitle}>
+                        Use this snippet to get the DevPath web app running locally.
+                    </p>
+                    <CodeBlock
+                        language="bash"
+                        code={`git clone https://github.com/devpathindcommunity-india/DevPath-Web.git
+cd DevPath-Web
+npm install
+npm run dev`}
+                    />
                 </div>
 
                 <div className={styles.techStack}>

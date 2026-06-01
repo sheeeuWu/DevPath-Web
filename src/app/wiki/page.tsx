@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar } from 'lucide-react';
 import Fuse from 'fuse.js';
-import { useState, useEffect, useMemo } from 'react';
-import { Search, ChevronRight, Book, Code, FileText, HelpCircle, ThumbsUp, ThumbsDown, Github, Users, MapPin, MessageCircle, Calendar, X } from 'lucide-react';
+import {
+    Search,
+    ChevronRight,
+    Book,
+    Code,
+    FileText,
+    HelpCircle,
+    ThumbsUp,
+    ThumbsDown,
+    Github,
+    Users,
+    MapPin,
+    MessageCircle,
+    Calendar,
+    X,
+} from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Wiki.module.css';
 
@@ -14,8 +26,6 @@ import { wikiContent } from '@/data/wikiContent';
 import { wikiSearchIndex } from '@/data/wikiSearchIndex';
 import { searchArticles } from '@/utils/wikiSearch';
 import WikiSearchResults from './WikiSearchResults';
-import { copyToClipboard } from '@/lib/clipboard';
-import { useNotification } from '@/context/NotificationContext';
 
 const categories = [
     {
@@ -48,14 +58,6 @@ const categories = [
     }
 ];
 
-function WikiPageContent() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [searchQuery, setSearchQuery] = useState("");
-/**
- * Converts a kebab-case slug into a human-readable Title Case label.
- * e.g. "community-offerings" → "Community Offerings"
- */
 function slugToLabel(slug: string): string {
     return slug
         .split('-')
@@ -63,50 +65,56 @@ function slugToLabel(slug: string): string {
         .join(' ');
 }
 
-export default function WikiPage() {
-    const [activeArticle, setActiveArticle] = useState("intro");
-    const [searchQuery, setSearchQuery] = useState(""); 
-    const { showSuccess, showError } = useNotification();
+function WikiPageContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState("");
 
-    // Add this below your useState declarations
-const allItems = categories.flatMap(c => c.items.map(i => ({ ...i, category: c.title })));
-const fuse = new Fuse(allItems, { keys: ['title'], threshold: 0.4 ,  includeMatches: true});
+    const activeArticleParam = searchParams.get('article');
+    const activeArticle = activeArticleParam && wikiContent[activeArticleParam]
+        ? activeArticleParam
+        : "intro";
 
-const fuseResults = fuse.search(searchQuery);  {/* ← line 57 starts here */}
-const matchMap = new Map(
-    fuseResults.map(r => [
-        r.item.id,
-        r.matches?.find(m => m.key === 'title')?.indices
-    ])
-);
-const filteredCategories = searchQuery.trim()
-    ? (() => {
-        const matched = new Set(fuseResults.map(r => r.item.id));
+    const allItems = useMemo(
+        () => categories.flatMap(category => category.items.map(item => ({
+            ...item,
+            category: category.title,
+        }))),
+        []
+    );
+
+    const fuse = useMemo(
+        () => new Fuse(allItems, { keys: ['title'], threshold: 0.4, includeMatches: true }),
+        [allItems]
+    );
+
+    const fuseResults = useMemo(() => fuse.search(searchQuery), [fuse, searchQuery]);
+
+    const matchMap = useMemo(
+        () => new Map(
+            fuseResults.map(result => [
+                result.item.id,
+                result.matches?.find(match => match.key === 'title')?.indices,
+            ])
+        ),
+        [fuseResults]
+    );
+
+    const filteredCategories = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return categories;
+        }
+
+        const matchedIds = new Set(fuseResults.map(result => result.item.id));
+
         return categories
-            .map(c => ({ ...c, items: c.items.filter(i => matched.has(i.id)) }))
-            .filter(c => c.items.length > 0);
-    })()
-    : categories;
+            .map(category => ({
+                ...category,
+                items: category.items.filter(item => matchedIds.has(item.id)),
+            }))
+            .filter(category => category.items.length > 0);
+    }, [searchQuery, fuseResults]);
 
-
-function highlightMatch(text: string, indices?: readonly [number, number][]) {
-    if (!indices || indices.length === 0) return text;
-    const result = [];
-    let lastIndex = 0;
-    for (const [start, end] of indices) {
-        result.push(text.slice(lastIndex, start));
-        result.push(
-            <mark key={start} className={styles.highlight}>
-                {text.slice(start, end + 1)}
-            </mark>
-        );
-        lastIndex = end + 1;
-    }
-    result.push(text.slice(lastIndex));
-    return <span style={{ whiteSpace: 'normal' }}>{result}</span>;
-}
-
-    // Fuzzy search results (title + keywords + description)
     const searchResults = useMemo(
         () => searchArticles(wikiSearchIndex, searchQuery),
         [searchQuery]
@@ -114,66 +122,43 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
 
     const isSearching = searchQuery.trim().length > 0;
 
-    // When user clicks a search result, open that article and clear search
+    function highlightMatch(text: string, indices?: readonly [number, number][]) {
+        if (!indices || indices.length === 0) {
+            return text;
+        }
+
+        const result = [];
+        let lastIndex = 0;
+
+        for (const [start, end] of indices) {
+            result.push(text.slice(lastIndex, start));
+            result.push(
+                <mark key={start} className={styles.highlight}>
+                    {text.slice(start, end + 1)}
+                </mark>
+            );
+            lastIndex = end + 1;
+        }
+
+        result.push(text.slice(lastIndex));
+
+        return <span style={{ whiteSpace: 'normal' }}>{result}</span>;
+    }
+
     function handleResultSelect(id: string) {
-        setActiveArticle(id);
+        router.push(`/wiki?article=${id}`, { scroll: false });
         setSearchQuery("");
     }
 
-    useEffect(() => {
-        const articleBody = document.querySelector(`.${styles.articleBody}`);
-        if (!articleBody) return;
-        const preElements = articleBody.querySelectorAll('pre');
-
-        preElements.forEach((pre) => {
-            if (pre.parentElement?.classList.contains('code-wrapper')) return;
-
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-wrapper relative group w-full';
-
-            pre.parentNode?.insertBefore(wrapper, pre);
-            wrapper.appendChild(pre);
-
-            const button = document.createElement('button');
-            button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-zinc-900/80 text-zinc-300 rounded border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-md cursor-pointer backdrop-blur-sm';
-            button.innerHTML = 'Copy';
-            button.type = 'button';
-
-            button.addEventListener('click', async () => {
-                const codeText = pre.textContent || '';
-                const copiedSuccessfully = await copyToClipboard(codeText);
-
-                if (copiedSuccessfully) {
-                    button.innerHTML = 'Copied!';
-                    button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-emerald-600 text-white rounded border border-emerald-500 transition-all duration-200 shadow-md';
-                    showSuccess('Code copied to clipboard.');
-                    setTimeout(() => {
-                        button.innerHTML = 'Copy';
-                        button.className = 'absolute right-3 top-3 px-2 py-1 text-xs font-semibold bg-zinc-900/80 text-zinc-300 rounded border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-zinc-800 hover:text-white transition-all duration-200 shadow-md cursor-pointer backdrop-blur-sm';
-                    }, 2000);
-                } else {
-                    showError('Copying code is not supported in this browser.');
-                }
-            });
-
-            wrapper.appendChild(button);
-        });
-    }, [activeArticle]);
-
-    const activeArticleParam = searchParams.get('article');
-    // Ensure activeArticle is a valid article in wikiContent, otherwise default to "intro"
-    const activeArticle = activeArticleParam && wikiContent[activeArticleParam] 
-        ? activeArticleParam 
-        : "intro";
-
-    const handleArticleChange = (id: string) => {
+    function handleArticleChange(id: string) {
         router.push(`/wiki?article=${id}`, { scroll: false });
-    };
+    }
+
+    const activeCategory = categories.find(category => category.items.some(item => item.id === activeArticle))?.title ?? slugToLabel(activeArticle);
 
     return (
         <div className={styles.container}>
             <aside className={styles.sidebar}>
-                {/* Search input */}
                 <div className={styles.searchContainer}>
                     <Search className={styles.searchIcon} size={16} />
                     <input
@@ -185,35 +170,18 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                         aria-label="Search wiki articles"
                     />
                     {isSearching && (
-                        <button aria-label="Action button" 
+                        <button
+                            type="button"
+                            aria-label="Clear search"
                             className={styles.clearSearch}
                             onClick={() => setSearchQuery("")}
-                            aria-label="Clear search"
                         >
                             <X size={14} />
                         </button>
                     )}
                 </div>
 
-                <nav>
-                    {categories.map((category, index) => (
-                        <div key={index} className={styles.category}>
-                            <h3 className={styles.categoryTitle}>{category.title}</h3>
-                            {category.items.map(item => (
-                                <div
-                                    key={item.id}
-                                    className={`${styles.navLink} ${activeArticle === item.id ? styles.active : ''}`}
-                                    onClick={() => handleArticleChange(item.id)}
-                                >
-                                    {item.icon}
-                                    {item.title}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </nav>
-                {/* Sidebar nav — hidden when search results are showing */}
-                {!isSearching && (
+                {!isSearching ? (
                     <nav>
                         {filteredCategories.map((category, index) => (
                             <div key={index} className={styles.category}>
@@ -222,7 +190,7 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                                     <div
                                         key={item.id}
                                         className={`${styles.navLink} ${activeArticle === item.id ? styles.active : ''}`}
-                                        onClick={() => setActiveArticle(item.id)}
+                                        onClick={() => handleArticleChange(item.id)}
                                     >
                                         {item.icon}
                                         {highlightMatch(item.title, matchMap.get(item.id))}
@@ -231,10 +199,7 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                             </div>
                         ))}
                     </nav>
-                )}
-
-                {/* Fuzzy search results in the sidebar */}
-                {isSearching && (
+                ) : (
                     <WikiSearchResults
                         results={searchResults}
                         query={searchQuery}
@@ -243,25 +208,13 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                 )}
             </aside>
 
-            {/* Main content — unchanged */}
             <main className={styles.content}>
                 <div className={styles.breadcrumb}>
                     <span>Docs</span>
                     <ChevronRight size={14} />
-                    <span>{categories.find(c => c.items.some(i => i.id === activeArticle))?.title ?? "Getting Started"}</span>
+                    <span>{activeCategory}</span>
                     <ChevronRight size={14} />
-                    <span>{wikiContent[activeArticle]?.title ?? "Introduction to DevPath"}</span>
-                    {/* Defensive: fall back to a formatted slug label if no category matches */}
-                    <span>
-                        {categories.find(c => c.items.some(i => i.id === activeArticle))?.title
-                            ?? slugToLabel(activeArticle)}
-                    </span>
-                    <ChevronRight size={14} />
-                    {/* Defensive: fall back to a formatted slug label if wikiContent entry is missing */}
-                    <span>
-                        {wikiContent[activeArticle]?.title
-                            ?? slugToLabel(activeArticle)}
-                    </span>
+                    <span>{wikiContent[activeArticle]?.title ?? slugToLabel(activeArticle)}</span>
                 </div>
 
                 <article>
@@ -280,8 +233,8 @@ function highlightMatch(text: string, indices?: readonly [number, number][]) {
                     <div className={styles.feedback}>
                         <span>Was this article helpful?</span>
                         <div className={styles.feedbackButtons}>
-                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
-                            <Button aria-label="Action button"  variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
+                            <Button aria-label="Action button" variant="ghost" icon={<ThumbsUp size={16} />}>Yes</Button>
+                            <Button aria-label="Action button" variant="ghost" icon={<ThumbsDown size={16} />}>No</Button>
                         </div>
                     </div>
                 </article>
