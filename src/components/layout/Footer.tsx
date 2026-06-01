@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Github, Book, Flag, Users, RefreshCw, Code, MessageSquare } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.webp';
 import styles from './Footer.module.css';
 import { MagneticText } from '../ui/magnetic-text';
 import { siteConfig } from '@/config/siteConfig';

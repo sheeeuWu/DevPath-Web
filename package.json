@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node ./node_modules/next/dist/bin/next dev --webpack",
+    "build": "node ./node_modules/next/dist/bin/next build",
+    "start": "node ./node_modules/next/dist/bin/next start",
     "lint": "eslint",
     "setup": "ts-node scripts/setup-project.ts",
     "test:e2e": "playwright test"
@@ -28,7 +28,7 @@
     "next": "^16.2.6",
     "next-themes": "^0.4.6",
     "react": "19.2.6",
-    "react-dom": "19.2.1",
+    "react-dom": "19.2.6",
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",

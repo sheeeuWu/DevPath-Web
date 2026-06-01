@@ -1,3 +1,4 @@
+import CodeBlock from '@/components/common/CodeBlock';
 import { ReactNode } from 'react';
 
 export type WikiArticle = {
@@ -220,18 +221,19 @@ export const wikiContent: Record<string, WikiArticle> = {
                 </ul>
                 <h2>Sample Component</h2>
                 <p>Here is a basic React functional counter component using state hooks:</p>
-                <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono text-sm overflow-x-auto my-4 block border border-zinc-800">
-{`import React, { useState } from 'react';
+                <CodeBlock
+                    language="tsx"
+                    code={`import React, { useState } from 'react';
 
 export default function Counter() {
     const [count, setCount] = useState(0);
     return (
-        <button aria-label="Action button"  onClick={() => setCount(count + 1)}>
+        <button aria-label="Action button" onClick={() => setCount(count + 1)}>
             Count: {count}
         </button>
     );
 }`}
-                </pre>
+                />
             </>
         )
     },
@@ -288,12 +290,13 @@ export default function Counter() {
                 </ol>
                 <h2>Quick Commands</h2>
                 <p>Run these terminal commands to initialize your feature work:</p>
-                <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono text-sm overflow-x-auto my-4 block border border-zinc-800">
-{`git checkout -b feature/cool-new-feature
+                <CodeBlock
+                    language="bash"
+                    code={`git checkout -b feature/cool-new-feature
 git add .
 git commit -m "feat: implement extremely cool feature"
 git push origin feature/cool-new-feature`}
-                </pre>
+                />
             </>
         )
     },
