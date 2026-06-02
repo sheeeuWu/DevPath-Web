@@ -86,12 +86,16 @@
     margin-bottom: 0.75rem;
     font-weight: 500;
 }
-
 .eventTitle {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
     line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
 }
 
 .meta {
