@@ -19,6 +19,8 @@ import { GIT_FALLBACK_STATS } from '@/lib/github';
 import { getSafeSocialUrl } from '@/lib/safe-social-url';
 import { copyToClipboard } from '@/lib/clipboard';
 import { useNotificationActions } from '@/stores/ui-store';
+import { useNotification } from '@/context/NotificationContext';
+import NotFoundView from '@/components/layout/NotFoundView';
 
 interface PublicUser {
     id?: string;
@@ -91,6 +93,7 @@ function ProfileContent({ uid }: { uid?: string }) {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [showNotFound, setShowNotFound] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [copied, setCopied] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -112,16 +115,19 @@ function ProfileContent({ uid }: { uid?: string }) {
 
             if (!currentUid || currentUid === 'u') {
                 setError('No user specified.');
+                setShowNotFound(false);
                 setLoading(false);
                 return;
             }
             if (currentUid.length < 3 || currentUid.length > 128 || /[<>"']/.test(currentUid)) {
                 setError('Invalid user identifier.');
+                setShowNotFound(true);
                 setLoading(false);
                 return;
             }
             setLoading(true);
             setError('');
+            setShowNotFound(false);
 
             try {
                 let userData: PublicUser | undefined;
@@ -168,6 +174,7 @@ function ProfileContent({ uid }: { uid?: string }) {
                     // Privacy Check
                     if (userData.privacySettings?.isPublic === false) {
                         setError('This profile is private.');
+                        setShowNotFound(true);
                         setLoading(false);
                         return;
                     }
@@ -289,10 +296,12 @@ function ProfileContent({ uid }: { uid?: string }) {
 
                 } else {
                     setError('User not found.');
+                    setShowNotFound(true);
                 }
             } catch (err) {
                 console.error("Error fetching user:", err);
                 setError('Failed to load profile.');
+                setShowNotFound(false);
             } finally {
                 setLoading(false);
             }
@@ -382,6 +391,10 @@ function ProfileContent({ uid }: { uid?: string }) {
     }
 
     if (error || !user) {
+        if (showNotFound) {
+            return <NotFoundView />;
+        }
+
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center">
                 <UserIcon size={64} className="text-muted-foreground mb-4" />
@@ -944,13 +957,7 @@ function SearchParamsFallback() {
     }
 
     if (!isValidUid(uid)) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center">
-                <UserIcon size={64} className="text-muted-foreground mb-4" />
-                <h1 className="text-2xl font-bold mb-2">Invalid Profile</h1>
-                <p className="text-muted-foreground">The requested profile identifier is invalid.</p>
-            </div>
-        );
+        return <NotFoundView />;
     }
 
     return <ProfileContent uid={uid} />;

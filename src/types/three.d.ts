@@ -51,4 +51,16 @@ declare module 'react' {
 			primitive: any;
 		}
 	}
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      torusKnotGeometry: any;
+      meshStandardMaterial: any;
+      ambientLight: any;
+      pointLight: any;
+      mesh: any;
+      group: any;
+      primitive: any;
+    }
+  }
 }

@@ -145,79 +145,91 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                     // Check if user is admin (only if email exists)
                     if (firebaseUser.email) {
-                        // 1. Try by Email
-                        const adminDocRef = doc(db, 'admins', firebaseUser.email.toLowerCase());
-                        const adminDoc = await getDoc(adminDocRef);
-                        if (adminDoc.exists()) {
-                            role = 'admin';
-                            userData = { ...userData, ...adminDoc.data(), docId: adminDoc.id };
-                        } else {
-                            // 2. Try by UID (Fallback)
-                            const adminUidDocRef = doc(db, 'admins', firebaseUser.uid);
-                            const adminUidDoc = await getDoc(adminUidDocRef);
-                            if (adminUidDoc.exists()) {
+                        try {
+                            // 1. Try by Email
+                            const adminDocRef = doc(db, 'admins', firebaseUser.email.toLowerCase());
+                            const adminDoc = await getDoc(adminDocRef);
+                            if (adminDoc.exists()) {
                                 role = 'admin';
-                                userData = { ...userData, ...adminUidDoc.data(), docId: adminUidDoc.id };
+                                userData = { ...userData, ...adminDoc.data(), docId: adminDoc.id };
+                            } else {
+                                // 2. Try by UID (Fallback)
+                                const adminUidDocRef = doc(db, 'admins', firebaseUser.uid);
+                                const adminUidDoc = await getDoc(adminUidDocRef);
+                                if (adminUidDoc.exists()) {
+                                    role = 'admin';
+                                    userData = { ...userData, ...adminUidDoc.data(), docId: adminUidDoc.id };
+                                }
                             }
+                        } catch (error) {
+                            console.error('Error fetching admin data:', error);
+                            // Fallback to member if admin fetch fails
                         }
                     }
 
                     // If not admin, check member
                     if (role === 'member') {
-                        // Check for member by UID (New Standard)
-                        const memberDocRef = doc(db, 'members', firebaseUser.uid);
-                        const memberDoc = await getDoc(memberDocRef);
+                        try {
+                            // Check for member by UID (New Standard)
+                            const memberDocRef = doc(db, 'members', firebaseUser.uid);
+                            const memberDoc = await getDoc(memberDocRef);
 
-                        if (memberDoc.exists()) {
-                            // Valid member - Load data
-                            userData = { ...userData, ...memberDoc.data() };
-                        } else {
-                            // New Member - Initialize Full Profile
-                            const defaultUserData = {
-                                uid: firebaseUser.uid,
-                                email: firebaseUser.email,
-                                name: firebaseUser.displayName || '',
-                                photoURL: firebaseUser.photoURL || '',
-                                role: 'member',
-                                points: 0,
-                                streak: 0,
-                                level: 0,
-                                badges: [],
-                                achievements: [],
-                                completedQuizzes: [],
-                                claimedRewards: [],
-                                followers: [],
-                                following: [],
-                                loginDates: [],
-                                privacySettings: {
-                                    showMobile: false,
-                                    showLocation: true,
-                                    showEmail: false,
-                                    showProjects: true,
-                                    showRewards: true,
-                                    isPublic: true,
-                                    showInCommunity: true
-                                },
-                                preferences: {
-                                    theme: 'dark'
-                                },
-                                githubStats: {
-                                    connected: false,
-                                    repos: 0,
-                                    stars: 0,
-                                    followers: 0,
-                                    contributions: 0
-                                },
-                                bio: '',
-                                city: '',
-                                state: '',
-                                socialLinks: {},
-                                createdAt: new Date().toISOString()
-                            };
+                            if (memberDoc.exists()) {
+                                // Valid member - Load data
+                                userData = { ...userData, ...memberDoc.data() };
+                            } else {
+                                // New Member - Initialize Full Profile
+                                const defaultUserData = {
+                                    uid: firebaseUser.uid,
+                                    email: firebaseUser.email,
+                                    name: firebaseUser.displayName || '',
+                                    photoURL: firebaseUser.photoURL || '',
+                                    role: 'member',
+                                    points: 0,
+                                    streak: 0,
+                                    level: 0,
+                                    badges: [],
+                                    achievements: [],
+                                    completedQuizzes: [],
+                                    claimedRewards: [],
+                                    followers: [],
+                                    following: [],
+                                    loginDates: [],
+                                    privacySettings: {
+                                        showMobile: false,
+                                        showLocation: true,
+                                        showEmail: false,
+                                        showProjects: true,
+                                        showRewards: true,
+                                        isPublic: true,
+                                        showInCommunity: true
+                                    },
+                                    preferences: {
+                                        theme: 'dark'
+                                    },
+                                    githubStats: {
+                                        connected: false,
+                                        repos: 0,
+                                        stars: 0,
+                                        followers: 0,
+                                        contributions: 0
+                                    },
+                                    bio: '',
+                                    city: '',
+                                    state: '',
+                                    socialLinks: {},
+                                    createdAt: new Date().toISOString()
+                                };
 
-                            // Create the new member document
-                            await setDoc(memberDocRef, defaultUserData);
-                            userData = { ...userData, ...defaultUserData };
+                                // Create the new member document
+                                await setDoc(memberDocRef, defaultUserData);
+                                userData = { ...userData, ...defaultUserData };
+                            }
+                        } catch (error) {
+                            console.error('Error fetching/creating member data:', error);
+                            setUser(null);
+                            setIsLoading(false);
+                            return; // Stop execution on critical failure to prevent hanging
                         }
                     }
 
@@ -598,28 +610,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         try {
             const { POINTS } = await import('@/lib/points');
-            const arrayUnion = (await import('firebase/firestore')).arrayUnion;
-            const increment = (await import('firebase/firestore')).increment;
+            const { arrayUnion, increment, writeBatch } = await import('firebase/firestore');
 
             const collectionName = user.role === 'admin' ? 'admins' : 'members';
             const docId = user.role === 'admin' ? user.email!.toLowerCase() : user.uid;
             const userRef = doc(db, collectionName, docId);
+            const leaderboardRef = doc(db, 'leaderboard', user.uid);
 
-            await setDoc(userRef, {
+            const batch = writeBatch(db);
+
+            batch.set(userRef, {
                 achievements: arrayUnion('community_follower'),
                 points: increment(POINTS.FOLLOW_COMMUNITY)
             }, { merge: true });
 
-            // Sync to Leaderboard
-            const leaderboardRef = doc(db, 'leaderboard', user.uid);
-            try {
-                await setDoc(leaderboardRef, {
-                    points: increment(POINTS.FOLLOW_COMMUNITY)
-                }, { merge: true });
-            } catch (syncError) {
-                leaderboardSyncErrorEmitter.emit(syncError, 'followCommunity-leaderboard-sync');
-                // Don't re-throw here since the main points were already awarded
-            }
+            batch.set(leaderboardRef, {
+                points: increment(POINTS.FOLLOW_COMMUNITY)
+            }, { merge: true });
+
+            await batch.commit();
 
             setUser(prev => prev ? {
                 ...prev,

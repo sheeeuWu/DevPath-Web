@@ -15,7 +15,8 @@ interface Notification {
     image?: string
     createdAt?: Timestamp
     read: boolean
-    type: 'achievement' | 'message' | 'event' | 'system'
+   type: 'achievement' | 'message' | 'event' | 'system' | 'event_reminder' | 'announcement' | 'wiki_update'
+link?: string
 }
 
 const notificationTypeClasses: Record<Notification['type'], string> = {
@@ -23,6 +24,9 @@ const notificationTypeClasses: Record<Notification['type'], string> = {
     event: "bg-gradient-to-r from-cyan-500 to-blue-500",
     message: "bg-gradient-to-r from-purple-500 to-pink-500",
     system: "bg-gradient-to-r from-gray-500 to-gray-600",
+    event_reminder: "bg-gradient-to-r from-green-500 to-teal-500",
+announcement: "bg-gradient-to-r from-blue-500 to-indigo-500",
+wiki_update: "bg-gradient-to-r from-violet-500 to-purple-500",
 }
 
 export function NotificationDropdown() {
@@ -118,6 +122,7 @@ export function NotificationDropdown() {
         <div className="sm:relative">
             {/* Bell Button */}
             <button
+            <button 
                 ref={triggerRef}
                 id="notification-trigger"
                 onClick={() => setIsOpen(!isOpen)}
@@ -214,6 +219,9 @@ export function NotificationDropdown() {
                                                     {notif.type === 'event' && '📅'}
                                                     {notif.type === 'message' && '💬'}
                                                     {(!notif.type || notif.type === 'system') && '🔔'}
+                                                    {notif.type === 'event_reminder' && '⏰'}
+{notif.type === 'announcement' && '📢'}
+{notif.type === 'wiki_update' && '📝'}
                                                 </div>
 
                                                 {/* Content */}

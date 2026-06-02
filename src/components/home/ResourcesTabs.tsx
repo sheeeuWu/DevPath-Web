@@ -378,6 +378,16 @@ export default function ResourcesTabs() {
         } else if (openParam === 'developer-mindset') {
             setActiveMainTab('learning');
             setIsMindsetModalOpen(true);
+        } else if (openParam === 'roadmap') {
+            const titleParam = searchParams.get('title');
+            if (titleParam) {
+                const found = originalResources.roadmaps.find(r => r.title === titleParam);
+                if (found && found.isDetailed) {
+                    setActiveMainTab('roadmaps');
+                    setActiveRoadmap(found.details);
+                    setIsRoadmapModalOpen(true);
+                }
+            }
         }
     }, [searchParams]);
 
@@ -571,7 +581,21 @@ export default function ResourcesTabs() {
                                         transition={{ duration: 0.3, delay: index * 0.1 }}
                                         className="h-full"
                                     >
-                                        <PremiumCard className={`${styles.resourceCard} h-full group flex flex-col relative overflow-hidden`}>
+                                        <PremiumCard 
+                                            className={`${styles.resourceCard} h-full group flex flex-col relative overflow-hidden`}
+                                            bookmarkItem={
+                                                activeMainTab === 'roadmaps' && resource.status !== 'coming_soon'
+                                                    ? {
+                                                          id: resource.title,
+                                                          title: resource.title,
+                                                          description: resource.description,
+                                                          type: 'roadmap',
+                                                          color: resource.color,
+                                                          path: `/resources?open=roadmap&title=${encodeURIComponent(resource.title)}`
+                                                      }
+                                                    : undefined
+                                            }
+                                        >
                                             {/* Coming Soon Overlay */}
                                             {resource.status === 'coming_soon' && (
                                                 <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-20 flex items-center justify-center">

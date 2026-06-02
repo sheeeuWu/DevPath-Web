@@ -9,21 +9,25 @@ import AppStoreButtons from '../ui/AppStoreButtons';
 
 export default function Footer() {
     return (
-        <footer className={styles.footer}>
-            <div className="container">
-                <div className={styles.content}>
-                    <div className={styles.brand}>
-                        <h3>
-                            <Image src={logo} alt="DevPath Logo" width={32} height={32} className="rounded-full" style={{ marginRight: '12px' }} />
-                            {siteConfig.name}
-                        </h3>
-                        <p className={styles.tagline}>
+        <footer className="w-full mt-auto py-12 border-t border-gray-200 dark:border-border bg-[var(--bg-secondary)]">
+            <div className="container mx-auto px-6 md:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
+                    {/* devPath */}
+                    <div className="flex flex-col gap-3">
+                        <div className="flex">
+                            <Image src={logo} alt="DevPath Logo" width={34} height={34} className="rounded-full" style={{ marginRight: '12px' }} />
+                            <p className="font-bold text-3xl text-gray-900 dark:text-white">
+                                {siteConfig.name}
+                            </p>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-text-muted leading-relaxed max-w-xs">
                             {siteConfig.tagline}
                         </p>
                     </div>
 
-                    <div className={styles.column}>
-                        <div className="mb-6">
+                    {/* Resources */}
+                    <div className="flex flex-col gap-3">
+                        <div className="mb-1">
                             <MagneticText
                                 text="RESOURCES"
                                 hoverText="EXPLORE"
@@ -43,8 +47,9 @@ export default function Footer() {
                         </div>
                     </div>
 
-                    <div className={styles.column}>
-                        <div className="mb-6">
+                    {/* Links */}
+                    <div className="flex flex-col gap-3">
+                        <div className="mb-1">
                             <MagneticText
                                 text="LINKS"
                                 hoverText="VISIT"
@@ -62,24 +67,31 @@ export default function Footer() {
                                 <Code size={16} /> Source Code
                             </Link>
                         </div>
+                    </div>
 
-                        <div className="mt-8">
-                            <h4 className="text-sm font-semibold text-gray-400 mb-4">Get the App</h4>
-                            <AppStoreButtons variant="footer" className="flex-col !items-start" />
-                        </div>
+                    {/* grid row 2 col 1 */}
+                    <div className="flex flex-col gap-3"></div>
 
-                        <div className="mt-8">
-                            <h4 className="text-sm font-semibold text-gray-400 mb-4">Contact Us</h4>
-                            <a aria-label="Link" 
-                                href={`mailto:${siteConfig.contact.email}`}
-                                className="text-sm text-cyan-400 hover:underline"
-                            >
-                                {siteConfig.contact.email}
-                            </a>
-                        </div>
+                    {/* contact us */}
+                    <div className="flex flex-col gap-3">
+                        <p className="text-xl font-bold tracking-tighter">CONTACT US</p>
+                        <a
+                            aria-label="Link"
+                            href={`mailto:${siteConfig.contact.email}`}
+                            className="text-sm text-cyan-400 hover:underline"
+                        >
+                            {siteConfig.contact.email}
+                        </a>
+                    </div>
+
+                    {/* get the app */}
+                    <div className="flex flex-col gap-3">
+                        <p className="text-xl font-bold tracking-tighter">GET THE APP</p>
+                        <AppStoreButtons variant="footer" className="flex-col !items-start" />
                     </div>
                 </div>
 
+                {/* copyright bar */}
                 <div className={styles.bottom}>
                     <div className={styles.copyright}>
                         <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>

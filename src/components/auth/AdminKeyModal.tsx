@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Key, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { secureFetch } from '@/lib/apiClient';  
 
 interface AdminKeyModalProps {
     isOpen: boolean;
@@ -22,7 +23,7 @@ export default function AdminKeyModal({ isOpen, onVerified, onCancel }: AdminKey
 
         try {
             // Sending key to the secure backend route instead of checking in browser
-            const response = await fetch('/api/auth/verify-admin', {
+            const response = await secureFetch('/api/auth/verify-admin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

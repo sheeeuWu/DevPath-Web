@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is super admin
+
     function isSuperAdmin() {
       return request.auth != null && (
         request.auth.token.email == 'devpathind.community@gmail.com' ||
@@ -9,213 +9,205 @@ service cloud.firestore {
       );
     }
 
-    // Admins collection
-    match /admins/{adminId} {
-      allow read: if true; // Public read
-      allow write: if isSuperAdmin() || (request.auth != null && (request.auth.token.email == adminId || request.auth.uid == adminId));
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
 
-      // GitHub Repos Subcollection
+    // ─── Admins ──────────────────────────────────────────────────────────────
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || (request.auth != null && (request.auth.token.email == adminId || request.auth.uid == adminId));
+      allow update: if request.auth != null && (
+        request.auth.token.email == adminId ||
+        request.auth.uid == adminId ||
+        isSuperAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']) ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following'])
+      );
+
       match /github_repos/{repoId} {
         allow read: if true;
         allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
       }
-
-      // Projects Subcollection
       match /projects/{projectId} {
         allow read: if true;
         allow create: if request.auth != null;
         allow update: if request.auth != null && (
-          request.auth.token.email == adminId || 
-          isSuperAdmin() || 
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount']))
+          request.auth.token.email == adminId ||
+          isSuperAdmin() ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount'])
         );
         allow delete: if request.auth != null && (request.auth.token.email == adminId || isSuperAdmin());
       }
-
-      // Allow updating followers list (for Follow feature)
-      // Allow updating followers list (for Follow feature)
-      // Explicitly allowing write access to followers for authenticated users
-      allow update: if request.auth != null && (
-        request.auth.token.email == adminId || 
-        request.auth.uid == adminId ||
-        isSuperAdmin() ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following']))
-      );
-
-      // Badges Subcollection
       match /badges/{badgeId} {
         allow read: if true;
         allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
       }
     }
 
-    // Super Admins collection (for dynamic super admin management)
+    // ─── Super Admins ─────────────────────────────────────────────────────────
     match /super_admins/{email} {
       allow read: if isSuperAdmin();
       allow write: if isSuperAdmin();
     }
 
-    // Members collection
+    // ─── Members ──────────────────────────────────────────────────────────────
     match /members/{userId} {
-      allow read: if true; // Public read
-      // userId is now the UID
+      allow read: if true;
       allow create, delete: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin();
       allow update: if request.auth != null && (
-        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isAdmin', 'isSuperAdmin', 'points', 'badges'])) || 
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isAdmin', 'isSuperAdmin', 'points', 'badges'])) ||
         isSuperAdmin() ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starredResources']))
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']) ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following']) ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starredResources'])
       );
 
-      // Projects Subcollection
       match /projects/{projectId} {
         allow read: if true;
         allow create: if request.auth != null;
         allow update: if request.auth != null && (
-          request.auth.uid == userId || 
-          isSuperAdmin() || 
-          // Allow any user to update 'stars' or 'likes' field only
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount'])) ||
-          // Allow any user to update 'followers' field (for Follow feature)
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']))
+          request.auth.uid == userId ||
+          isSuperAdmin() ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount']) ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers'])
         );
         allow delete: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
       }
 
-      // Progress Subcollection - Roadmap progress tracking
       match /progress/{progressId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
 
-      // Badges Subcollection
       match /badges/{badgeId} {
         allow read: if true;
         allow write: if isSuperAdmin() || (request.auth != null && request.auth.uid == userId);
       }
 
-      // GitHub Repos Subcollection
       match /github_repos/{repoId} {
         allow read: if true;
         allow write: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
       }
 
-      // User Notifications Subcollection
       match /notifications/{notificationId} {
         allow read: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
-        // Allow admins to create notifications for users
         allow create: if isSuperAdmin() || isAdmin();
-        // Allow users to update (mark as read) and delete their own notifications
         allow update, delete: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      }
+
+      // ── 🆕 Gamification subcollection ──────────────────────────────────────
+      // Stores XP, streak data, earned badges, and activity calendar per user.
+      // xp and earnedBadges are protected — only super admin or Cloud Functions
+      // should increment them. Users can write activityDates and streakFreezes.
+      match /gamification/{docId} {
+        allow read: if true; // Public so leaderboard components can read
+        allow create: if request.auth != null && request.auth.uid == userId;
+        allow update: if request.auth != null && (
+          isSuperAdmin() ||
+          // Users can only update non-sensitive fields (streak calendar, freeze usage)
+          (request.auth.uid == userId &&
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['xp', 'earnedBadges', 'weeklyXP', 'monthlyXP']))
+        );
+        allow delete: if isSuperAdmin();
       }
     }
 
-    // Earned Badges collection
+    // ─── Earned Badges ────────────────────────────────────────────────────────
     match /earned_badges/{badgeId} {
       allow read: if true;
       allow write: if isSuperAdmin();
     }
 
-    // Leaderboard collection
+    // ─── Leaderboard ──────────────────────────────────────────────────────────
+    // Updated: super admin or a Cloud Function (via admin SDK) should write xp/points.
+    // Direct user writes are blocked for score fields to prevent cheating.
     match /leaderboard/{userId} {
       allow read: if true;
       allow create, delete: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin();
       allow update: if request.auth != null && (
-        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['points'])) || 
+        (request.auth.uid == userId &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['points', 'xp', 'weeklyXP', 'monthlyXP'])) ||
         isSuperAdmin()
       );
     }
 
-    // Resources collection
+    // ─── Resources ───────────────────────────────────────────────────────────
     match /resources/{resourceId} {
       allow read: if true;
-      // Allow create/write if Super Admin (for manual addition)
-      allow write: if isSuperAdmin(); 
-      // Allow update of starCount by authenticated users
+      allow write: if isSuperAdmin();
       allow update: if request.auth != null && (
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starCount']) ||
         isSuperAdmin()
       );
     }
 
-    // Superadmin Keys collection
+    // ─── Superadmin / Admin Keys ──────────────────────────────────────────────
     match /superadmin_keys/{keyId} {
-      allow read: if isSuperAdmin(); // Prevent public read
-      allow write: if isSuperAdmin(); // Only super admin can change the key
+      allow read: if isSuperAdmin();
+      allow write: if isSuperAdmin();
     }
-
-    // Admin Keys collection
     match /admin_keys/{keyId} {
-      allow read: if isSuperAdmin(); // Prevent public read
+      allow read: if isSuperAdmin();
       allow write: if isSuperAdmin();
     }
 
-    // Roles collection
+    // ─── Roles ───────────────────────────────────────────────────────────────
     match /roles/{roleId} {
-      allow read: if true; // Public read to display roles
-      allow write: if isSuperAdmin(); // Only super admin can manage roles
+      allow read: if true;
+      allow write: if isSuperAdmin();
     }
 
-    // Projects collection
+    // ─── Projects (top-level) ────────────────────────────────────────────────
     match /projects/{projectId} {
-      allow read: if true; // Public read
-      allow create: if request.auth != null; // Authenticated users can create
+      allow read: if true;
+      allow create: if request.auth != null;
       allow update: if request.auth != null && (
-        request.auth.uid == resource.data.userId || 
+        request.auth.uid == resource.data.userId ||
         isSuperAdmin() ||
-        // Allow any user to update 'stars' or 'likes' field only
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount']))
-      ); 
-      allow delete: if request.auth != null && (request.auth.uid == resource.data.userId || isSuperAdmin()); // Owner or Super Admin can delete
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount'])
+      );
+      allow delete: if request.auth != null && (request.auth.uid == resource.data.userId || isSuperAdmin());
     }
 
-    // Discussions collection
+    // ─── Discussions ─────────────────────────────────────────────────────────
     match /discussions/{discussionId} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
-        resource.data.authorId == request.auth.uid || 
+        resource.data.authorId == request.auth.uid ||
         isSuperAdmin() ||
-        // Allow any user to update reactions or replyCount
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'replyCount']))
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'replyCount'])
       );
       allow delete: if request.auth != null && (resource.data.authorId == request.auth.uid || isSuperAdmin());
-      
+
       match /replies/{replyId} {
         allow read: if true;
         allow create: if request.auth != null;
         allow update, delete: if request.auth != null && (resource.data.authorId == request.auth.uid || isSuperAdmin());
       }
     }
-    // Explicit Collection Group Rule for Projects
+
+    // ─── Collection Group: Projects ──────────────────────────────────────────
     match /{path=**}/projects/{projectId} {
       allow read: if true;
     }
 
-    // Helper function to check if user is in admins collection
-    function isAdmin() {
-      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
-    }
-
-    // Events collection
+    // ─── Events ──────────────────────────────────────────────────────────────
     match /events/{eventId} {
       allow read: if true;
       allow write: if isSuperAdmin() || isAdmin();
     }
 
-    // Admin Notifications collection (System History)
+    // ─── Notifications (admin/system) ────────────────────────────────────────
     match /notifications/{notificationId} {
       allow read: if isSuperAdmin() || isAdmin();
       allow create: if isSuperAdmin() || isAdmin();
     }
-
-    // Admin Notifications collection (Legacy - keep if needed or remove if unused)
     match /admin_notifications/{notificationId} {
       allow read, write: if isSuperAdmin() || isAdmin();
     }
 
-    // Settings collection (for Maintenance Mode etc)
+    // ─── Settings ────────────────────────────────────────────────────────────
     match /settings/{settingId} {
       allow read: if true;
       allow write: if isSuperAdmin();

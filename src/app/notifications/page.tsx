@@ -15,7 +15,8 @@ interface Notification {
     image?: string
     createdAt: any
     read: boolean
-    type: 'achievement' | 'message' | 'event' | 'system'
+    type: 'achievement' | 'message' | 'event' | 'system' | 'event_reminder' | 'announcement' | 'wiki_update'
+    link?: string
 }
 
 export default function NotificationsPage() {

@@ -23,42 +23,44 @@ export default function AppStoreButtons({ className = "", variant = 'hero' }: Ap
     const isFooter = variant === 'footer';
 
     return (
-        <div className={`flex flex-col sm:flex-row gap-3 ${className}`}>
+        <div className={`${className}`}>
             {/* Apple App Store Button */}
             {/* TODO: Update with real App Store URL when live */}
-            <Link 
-                href="#"
-                className="group flex items-center gap-3 bg-black border border-white/20 hover:border-white/50 text-white rounded-xl px-4 py-2.5 transition-all hover:scale-105 shadow-lg"
-                aria-label="Download on the App Store"
-            >
-                <AppleIcon className="text-3xl group-hover:text-cyan-400 transition-colors" />
-                <div className="flex flex-col items-start">
-                    <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold leading-none mb-1">
-                        Download on the
-                    </span>
-                    <span className="text-sm font-bold leading-none">
-                        App Store
-                    </span>
-                </div>
-            </Link>
+            <div className="flex flex-col lg:flex-row gap-3 w-fit">
+                <Link
+                    href="#"
+                    className="group w-full lg:flex-1 flex items-center gap-3 bg-black border border-white/20 hover:border-white/50 text-white rounded-xl px-4 py-2.5 transition-all hover:scale-105 shadow-lg"
+                    aria-label="Download on the App Store"
+                >
+                    <AppleIcon className="text-3xl group-hover:text-cyan-400 transition-colors" />
+                    <div className="flex flex-col items-start">
+                        <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold leading-none mb-1">
+                            Download on the
+                        </span>
+                        <span className="text-sm font-bold leading-none">
+                            App Store
+                        </span>
+                    </div>
+                </Link>
 
-            {/* Google Play Store Button */}
-            {/* TODO: Update with real Play Store URL when live */}
-            <Link 
-                href="#"
-                className="group flex items-center gap-3 bg-black border border-white/20 hover:border-white/50 text-white rounded-xl px-4 py-2.5 transition-all hover:scale-105 shadow-lg"
-                aria-label="Get it on Google Play"
-            >
-                <PlayStoreIcon className="text-3xl group-hover:text-green-400 transition-colors" />
-                <div className="flex flex-col items-start">
-                    <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold leading-none mb-1">
-                        Get it on
-                    </span>
-                    <span className="text-sm font-bold leading-none">
-                        Google Play
-                    </span>
-                </div>
-            </Link>
+                {/* Google Play Store Button */}
+                {/* TODO: Update with real Play Store URL when live */}
+                <Link
+                    href="#"
+                    className="group w-full lg:flex-1 flex items-center gap-3 bg-black border border-white/20 hover:border-white/50 text-white rounded-xl px-4 py-2.5 transition-all hover:scale-105 shadow-lg"
+                    aria-label="Get it on Google Play"
+                >
+                    <PlayStoreIcon className="text-3xl group-hover:text-green-400 transition-colors" />
+                    <div className="flex flex-col items-start">
+                        <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold leading-none mb-1">
+                            Get it on
+                        </span>
+                        <span className="text-sm font-bold leading-none">
+                            Google Play
+                        </span>
+                    </div>
+                </Link>
+            </div>
         </div>
     );
 }

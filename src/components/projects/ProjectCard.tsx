@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from 'react';
+import { Target, ExternalLink, Github, Edit3, Play, Maximize2, Star, Bookmark } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
-import { Target, ExternalLink, Github, Edit3, Play, Maximize2, Star } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useBookmarks } from '@/hooks/useBookmarks';
 
 interface Project {
     id: string;
@@ -33,6 +37,8 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
     const { user } = useAuth();
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [isStarring, setIsStarring] = useState(false);
+    const { isBookmarked, toggleBookmark } = useBookmarks();
+    const isLocalBookmarked = isBookmarked(project.id);
 
     // Helper to strip HTML for preview
     const stripHtml = (html: string) => {
@@ -127,6 +133,32 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
         <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/20 hover:scale-[1.02] transition-all duration-300 flex flex-col h-full group/card">
             {/* Media Section */}
             <div className="aspect-video bg-muted relative group">
+                {/* Offline Bookmark Button */}
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        toggleBookmark({
+                            id: project.id,
+                            title: project.title,
+                            description: project.description,
+                            type: 'project',
+                            color: '#3b82f6',
+                            path: '/profile'
+                        });
+                    }}
+                    className={`absolute top-2 left-2 p-2 rounded-full backdrop-blur-md transition-all shadow-md hover:scale-105 active:scale-95 z-10 ${
+                        isLocalBookmarked
+                            ? 'bg-yellow-500/20 dark:bg-yellow-500/30 border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/30 border'
+                            : 'bg-background/80 text-muted-foreground hover:text-foreground hover:bg-background border border-border'
+                    }`}
+                    title={isLocalBookmarked ? "Remove Bookmark" : "Save Bookmark (Offline)"}
+                    aria-label={isLocalBookmarked ? "Remove Bookmark" : "Save Bookmark (Offline)"}
+                >
+                    <Bookmark size={14} fill={isLocalBookmarked ? "currentColor" : "none"} />
+                </button>
+
                 {embedUrl ? (
                     <iframe
                         src={embedUrl}

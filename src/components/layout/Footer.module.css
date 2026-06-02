@@ -6,22 +6,6 @@
     margin-top: auto;
 }
 
-.content {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 60px;
-    margin-bottom: 20px;
-}
-
-.brand h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 24px;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-}
-
 .tagline {
     color: var(--text-secondary);
     line-height: 1.6;
@@ -29,17 +13,10 @@
     margin-bottom: 24px;
 }
 
-.column h4 {
-    color: var(--text-primary);
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 24px;
-}
-
 .links {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .link {
@@ -58,7 +35,7 @@
 
 .bottom {
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--glass-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -85,11 +62,6 @@
 }
 
 @media (max-width: 768px) {
-    .content {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
     .bottom {
         flex-direction: column;
         gap: 20px;
