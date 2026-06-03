@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from 'react';
-import { Target, ExternalLink, Github, Edit3, Play, Maximize2, Star, Bookmark } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
+import { useState, type ReactNode } from 'react';
+import { Target, ExternalLink, Edit3, Star, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useBookmarks } from '@/hooks/useBookmarks';
+
+interface FuseMatch {
+    key?: string;
+    value?: string;
+    indices: readonly [number, number][];
+}
 
 interface Project {
     id: string;
@@ -21,9 +24,10 @@ interface Project {
     videoUrl?: string;
     screenshots?: string[];
     skills?: string[];
-    createdAt?: any;
-    stars?: string[]; // Array of user IDs
+    createdAt?: unknown;
+    stars?: string[];
     starCount?: number;
+    matches?: FuseMatch[];
 }
 
 interface ProjectCardProps {
@@ -33,6 +37,41 @@ interface ProjectCardProps {
     onReadMore?: (project: Project) => void;
 }
 
+function HighlightedText({
+    text,
+    indices,
+}: {
+    text: string;
+    indices?: readonly [number, number][];
+}) {
+    if (!indices?.length) {
+        return <>{text}</>;
+    }
+
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+
+    indices.forEach(([start, end], index) => {
+        if (start > lastIndex) {
+            parts.push(text.slice(lastIndex, start));
+        }
+
+        parts.push(
+            <mark key={`${start}-${end}-${index}`} className="rounded bg-cyan-500/25 px-0.5 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.35)]">
+                {text.slice(start, end + 1)}
+            </mark>
+        );
+
+        lastIndex = end + 1;
+    });
+
+    if (lastIndex < text.length) {
+        parts.push(text.slice(lastIndex));
+    }
+
+    return <>{parts}</>;
+}
+
 export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: ProjectCardProps) {
     const { user } = useAuth();
     const [showFullDescription, setShowFullDescription] = useState(false);
@@ -40,13 +79,16 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const isLocalBookmarked = isBookmarked(project.id);
 
-    // Helper to strip HTML for preview
     const stripHtml = (html: string) => {
         if (!html) return '';
         return html.replace(/<[^>]*>?/gm, '');
     };
 
-    // Optimistic UI state
+    const titleMatch = project.matches?.find((match) => match.key === 'title');
+    const descriptionMatch = project.matches?.find((match) => match.key === 'description');
+    const descriptionText = stripHtml(project.description);
+    const descriptionIndices = project.description === descriptionText ? descriptionMatch?.indices : undefined;
+
     const [stars, setStars] = useState<string[]>(project.stars || []);
     const [starCount, setStarCount] = useState<number>(project.starCount || (project.stars?.length || 0));
 
@@ -63,7 +105,6 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
         setIsStarring(true);
         const newHasStarred = !hasStarred;
 
-        // Optimistic update
         if (newHasStarred) {
             setStars([...stars, user.uid]);
             setStarCount(prev => prev + 1);
@@ -73,7 +114,6 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
         }
 
         try {
-            // Update the project in the ROOT collection (Source of Truth for Showcase)
             const projectRef = doc(db, 'projects', project.id);
             if (newHasStarred) {
                 await updateDoc(projectRef, {
@@ -88,7 +128,6 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
             }
         } catch (error) {
             console.error("Error starring project:", error);
-            // Revert optimistic update
             if (newHasStarred) {
                 setStars(stars.filter(id => id !== user.uid));
                 setStarCount(prev => Math.max(0, prev - 1));
@@ -105,7 +144,6 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
     const getEmbedUrl = (url: string) => {
         if (!url) return '';
 
-        // YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             let videoId = '';
             if (url.includes('youtube.com/watch?v=')) {
@@ -113,14 +151,12 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
             } else if (url.includes('youtu.be/')) {
                 videoId = url.split('youtu.be/')[1];
             } else if (url.includes('youtube.com/embed/')) {
-                return url; // Already embed link
+                return url;
             }
             if (videoId) return `https://www.youtube.com/embed/${videoId}`;
         }
 
-        // Google Drive
         if (url.includes('drive.google.com')) {
-            // Convert view/sharing links to preview links
             return url.replace('/view', '/preview').replace('/usp=sharing', '');
         }
 
@@ -131,9 +167,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
 
     return (
         <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/20 hover:scale-[1.02] transition-all duration-300 flex flex-col h-full group/card">
-            {/* Media Section */}
             <div className="aspect-video bg-muted relative group">
-                {/* Offline Bookmark Button */}
                 <button
                     type="button"
                     onClick={(e) => {
@@ -180,9 +214,9 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                     </div>
                 )}
 
-                {/* Overlay Actions */}
                 {isOwner && (
-                    <button aria-label="Action button" 
+                    <button
+                        aria-label="Action button"
                         onClick={(e) => {
                             e.stopPropagation();
                             onEdit?.(project);
@@ -195,13 +229,15 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                 )}
             </div>
 
-            {/* Content Section */}
             <div className="p-5 flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-2 gap-2">
-                    <h3 className="font-bold text-lg line-clamp-1 flex-1" title={project.title}>{project.title}</h3>
+                    <h3 className="font-bold text-lg line-clamp-1 flex-1" title={project.title}>
+                        <HighlightedText text={project.title} indices={titleMatch?.indices} />
+                    </h3>
                     <div className="flex items-center gap-2">
                         {project.websiteUrl && (
-                            <a aria-label="Link" 
+                            <a
+                                aria-label="Link"
                                 href={project.websiteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -216,8 +252,8 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                 <div className="flex justify-between items-center mb-3">
                     <p className="text-xs text-primary font-medium">by {project.authorName || 'Anonymous'}</p>
 
-                    {/* Star Button */}
-                    <button aria-label="Action button" 
+                    <button
+                        aria-label="Action button"
                         onClick={handleToggleStar}
                         disabled={isStarring}
                         className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full transition-colors ${hasStarred
@@ -230,14 +266,19 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                     </button>
                 </div>
 
-                {/* Tech Stack */}
                 {project.skills && project.skills.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
-                        {project.skills.slice(0, 3).map(skill => (
-                            <span key={skill} className="px-2 py-0.5 bg-secondary/50 text-secondary-foreground text-[10px] rounded-full border border-border/50">
-                                {skill}
-                            </span>
-                        ))}
+                        {project.skills.slice(0, 3).map(skill => {
+                            const skillMatch = project.matches?.find(
+                                (match) => match.key === 'skills' && match.value === skill
+                            );
+
+                            return (
+                                <span key={skill} className="px-2 py-0.5 bg-secondary/50 text-secondary-foreground text-[10px] rounded-full border border-border/50">
+                                    <HighlightedText text={skill} indices={skillMatch?.indices} />
+                                </span>
+                            );
+                        })}
                         {project.skills.length > 3 && (
                             <span className="px-2 py-0.5 bg-secondary/50 text-secondary-foreground text-[10px] rounded-full border border-border/50">
                                 +{project.skills.length - 3}
@@ -246,14 +287,14 @@ export default function ProjectCard({ project, isOwner, onEdit, onReadMore }: Pr
                     </div>
                 )}
 
-                {/* Description */}
                 <div className="text-sm text-muted-foreground mb-4">
                     <p className="line-clamp-3">
-                        {stripHtml(project.description)}
+                        <HighlightedText text={descriptionText} indices={descriptionIndices} />
                     </p>
                 </div>
 
-                <button aria-label="Action button" 
+                <button
+                    aria-label="Action button"
                     onClick={() => onReadMore ? onReadMore(project) : setShowFullDescription(!showFullDescription)}
                     className="text-xs text-primary hover:underline mt-auto self-start"
                 >
