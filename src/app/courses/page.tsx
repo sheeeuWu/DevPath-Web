@@ -5,7 +5,7 @@ import { GraduationCap, Sparkles, Code, Server, Layers, Rocket, CheckCircle2, Ar
 
 export default function CoursesPage() {
     return (
-        <main className="pb-20 relative bg-surface-deep overflow-hidden">
+        <main className="pb-20 relative bg-white dark:bg-surface-deep overflow-hidden">
             <div className="container mx-auto px-4 relative z-10">
                 {/* Hero Section */}
                 <div className="text-center mb-20 max-w-4xl mx-auto">
@@ -36,7 +36,7 @@ export default function CoursesPage() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="group relative bg-gradient-to-b from-card to-transparent border border-border dark:border-[hsl(var(--border)/0.3)] rounded-3xl p-8 hover:border-primary/30 transition-all duration-300"
                     >
-                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                        <div className="absolute inset-0 bg-white dark:bg-surface-deep opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                         <div className="relative z-10">
                             <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 text-blue-400 group-hover:scale-110 transition-transform">
                                 <Code size={28} />
@@ -69,7 +69,7 @@ export default function CoursesPage() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="group relative bg-gradient-to-b from-card to-transparent border border-border dark:border-[hsl(var(--border)/0.3)] rounded-3xl p-8 hover:border-purple-500/30 transition-all duration-300"
                     >
-                        <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                        <div className="absolute inset-0 bg-white dark:bg-surface-deep opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                         <div className="relative z-10">
                             <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 transition-transform">
                                 <Server size={28} />
@@ -102,7 +102,7 @@ export default function CoursesPage() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="group relative bg-gradient-to-b from-card to-transparent border border-border dark:border-[hsl(var(--border)/0.3)] rounded-3xl p-8 hover:border-green-500/30 transition-all duration-300"
                     >
-                        <div className="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+                        <div className="absolute inset-0 bg-white dark:bg-surface-deep opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
                         <div className="relative z-10">
                             <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 text-green-400 group-hover:scale-110 transition-transform">
                                 <Layers size={28} />
@@ -172,7 +172,7 @@ export default function CoursesPage() {
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="bg-surface-deep border border-border dark:border-[hsl(var(--border)/0.3)] rounded-3xl p-8 md:p-10"
+                        className="bg-white dark:bg-surface-deep border border-border dark:border-[hsl(var(--border)/0.3)] rounded-3xl p-8 md:p-10"
                     >
                         <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
                             <GraduationCap className="text-yellow-400" />

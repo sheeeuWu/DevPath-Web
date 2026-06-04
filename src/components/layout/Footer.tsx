@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Code,
   MessageSquare,
+  Shield,
 } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import styles from "./Footer.module.css";

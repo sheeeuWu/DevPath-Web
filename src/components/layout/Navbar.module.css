@@ -198,6 +198,13 @@
     outline-offset: 2px;
 }
 
+
+.navLink[aria-current="page"] {
+    color: var(--primary);
+    font-weight: 600;
+    background: rgb(128, 171, 240);
+}
+
 /* Mobile Menu Backdrop */
 .mobileBackdrop {
     display: none;

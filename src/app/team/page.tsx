@@ -216,10 +216,10 @@ const getInitials = (name: string): string =>
         .toUpperCase();
 
 const rolePalette: Record<TeamMember['category'], string> = {
-    Owner: 'bg-emerald-400/20 text-emerald-200 border-emerald-300/30',
-    'Core Admin': 'bg-indigo-400/20 text-indigo-200 border-indigo-300/30',
-    Head: 'bg-fuchsia-400/20 text-fuchsia-200 border-fuchsia-300/30',
-    'City Lead': 'bg-sky-400/20 text-sky-200 border-sky-300/30'
+    Owner: 'bg-emerald-400/20 text-emerald-500 border-emerald-300/30 dark:text-emerald-400',
+    'Core Admin': 'bg-indigo-400/20 text-indigo-500 border-indigo-300/30 dark:text-indigo-400',
+    Head: 'bg-fuchsia-400/20 text-fuchsia-500 border-fuchsia-300/30 dark:text-fuchsia-400',
+    'City Lead': 'bg-sky-400/20 text-sky-500 border-sky-300/30 dark:text-sky-400'
 };
 
 const TeamTile = ({ member, index, stepClass = '' }: { member: TeamMember; index: number; stepClass?: string }) => {
@@ -242,7 +242,7 @@ const TeamTile = ({ member, index, stepClass = '' }: { member: TeamMember; index
                 whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-20px' }}
                 transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.35, delay: (index % 12) * 0.03 }}
-                className="group relative aspect-[5/4] sm:aspect-[6/5] overflow-hidden bg-surface-dark"
+                className="group relative aspect-[5/4] sm:aspect-[6/5] overflow-hidden bg-white/95 text-slate-900 dark:bg-surface-dark dark:text-white"
                 style={{
                     clipPath: 'polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)'
                 }}
@@ -262,16 +262,16 @@ const TeamTile = ({ member, index, stepClass = '' }: { member: TeamMember; index
                         onError={() => setImageReady(true)}
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-2xl font-bold text-white/80">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-2xl font-bold text-slate-900/80 dark:from-slate-700 dark:to-slate-900 dark:text-white/80">
                         {getInitials(member.name)}
                     </div>
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-deep/95 via-surface-deep/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-50/95 via-slate-50/40 to-transparent dark:from-surface-deep/95 dark:via-surface-deep/40" />
 
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <p className="text-white text-sm font-semibold leading-tight truncate">{member.name}</p>
-                    <p className="text-cyan-100/80 text-[11px] leading-tight truncate">{member.subRole ?? member.role}</p>
+                    <p className="text-slate-900 text-sm font-semibold leading-tight truncate dark:text-white">{member.name}</p>
+                    <p className="text-cyan-900/80 text-[11px] leading-tight truncate dark:text-cyan-100/80">{member.subRole ?? member.role}</p>
                 </div>
             </motion.article>
         </BorderGlow>
@@ -285,9 +285,9 @@ const ValueCard = ({
     title: string;
     body: string;
 }) => (
-    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-slate-900 font-semibold text-lg">{title}</h3>
-        <p className="text-slate-600 text-sm mt-2 leading-relaxed">{body}</p>
+    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
+        <h3 className="text-slate-900 font-semibold text-lg dark:text-slate-100">{title}</h3>
+        <p className="text-slate-600 text-sm mt-2 leading-relaxed dark:text-slate-300">{body}</p>
     </article>
 );
 
@@ -310,10 +310,10 @@ const CoreRoleCard = ({ member, index }: { member: TeamMember; index: number }) 
             whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.28, delay: (index % 6) * 0.04 }}
-            className="relative overflow-hidden bg-surface-dark"
+            className="relative overflow-hidden bg-white/95 text-slate-900 dark:bg-surface-dark dark:text-white"
             style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%)' }}
         >
-            <div className="relative h-48 sm:h-52 bg-surface-deep overflow-hidden">
+            <div className="relative h-48 sm:h-52 bg-slate-100 overflow-hidden dark:bg-surface-deep">
                 {!imageReady && (
                     <div className="absolute inset-0 z-10 animate-pulse bg-slate-400/25" aria-hidden="true" />
                 )}
@@ -337,14 +337,14 @@ const CoreRoleCard = ({ member, index }: { member: TeamMember; index: number }) 
             </div>
 
             <div className="p-3 sm:p-4">
-                <p className="text-white text-lg font-semibold leading-tight truncate">{member.name}</p>
-                <p className="text-cyan-300 text-sm font-medium mt-1 truncate">{member.role}</p>
+                <p className="text-slate-900 text-lg font-semibold leading-tight truncate dark:text-white">{member.name}</p>
+                <p className="text-cyan-700 text-sm font-medium mt-1 truncate dark:text-cyan-300">{member.role}</p>
                 {member.subRole && (
-                    <p className="text-cyan-100/70 text-xs mt-1 truncate">{member.subRole}</p>
+                    <p className="text-cyan-800/70 text-xs mt-1 truncate dark:text-cyan-100/70">{member.subRole}</p>
                 )}
 
                 {member.responsibilities && member.responsibilities.length > 0 && (
-                    <ul className="mt-2 space-y-1 text-[11px] text-cyan-50/70 leading-snug">
+                    <ul className="mt-2 space-y-1 text-[11px] text-slate-600 dark:text-cyan-50/70 leading-snug">
                         {member.responsibilities.slice(0, 2).map((item, idx) => (
                             <li key={idx} className="truncate">• {item}</li>
                         ))}
@@ -373,7 +373,7 @@ export default function TeamPage() {
 
     return (
         <>
-            <section className="min-h-screen bg-surface-deep">
+            <section className="min-h-screen bg-background text-foreground dark:bg-surface-deep dark:text-white">
                 <div className="relative overflow-hidden">
                     <div className="absolute inset-0 pointer-events-none">
                     <div
@@ -394,16 +394,16 @@ export default function TeamPage() {
                 <div className="container mx-auto max-w-[1320px] px-4 pt-6 md:pt-8 pb-16 md:pb-20 relative z-10">
                     <div className="grid lg:grid-cols-12 gap-8 xl:gap-10 items-start lg:order-none order-2">
                         <div className="lg:col-span-8 xl:col-span-8 lg:order-none order-2 pt-12 lg:pt-16">
-                            <p className="text-cyan-200/80 text-sm uppercase tracking-[0.2em]">DevPath Community</p>
-                            <h1 className="mt-4 text-4xl md:text-6xl font-bold text-white leading-[1.08]">
+                            <p className="text-cyan-700/80 dark:text-cyan-200/80 text-sm uppercase tracking-[0.2em]">DevPath Community</p>
+                            <h1 className="mt-4 text-4xl md:text-6xl font-bold text-slate-900 dark:text-white leading-[1.08]">
                                 Meet our team
                             </h1>
-                            <p className="mt-4 text-cyan-50/75 max-w-2xl leading-relaxed">
+                            <p className="mt-4 text-slate-600 dark:text-cyan-50/75 max-w-2xl leading-relaxed">
                                 A mission-focused group of builders, mentors, and organizers creating accessible learning pathways for everyone.
                             </p>
 
                             <div className="mt-8 flex flex-wrap gap-3 text-xs">
-                                <span className="px-3 py-1.5 rounded-full border border-white/20 text-white/85 bg-white/5">{teamMembers.length} contributors</span>
+                                <span className="px-3 py-1.5 rounded-full border border-slate-200/80 bg-slate-50 text-slate-900 dark:border-white/20 dark:bg-white/5 dark:text-white">{teamMembers.length} contributors</span>
                                 <span className={`px-3 py-1.5 rounded-full border ${rolePalette['Core Admin']}`}>{coreAdmins.length} core admins</span>
                                 <span className={`px-3 py-1.5 rounded-full border ${rolePalette['Head']}`}>{heads.length} heads</span>
                                 <span className={`px-3 py-1.5 rounded-full border ${rolePalette['City Lead']}`}>{cityLeads.length} city leads</span>
@@ -447,39 +447,39 @@ export default function TeamPage() {
                                                     onError={() => setOwnerImageReady(true)}
                                                 />
                                             ) : (
-                                                <div className="w-full h-full bg-slate-700 flex items-center justify-center text-white text-3xl font-bold">{getInitials(owner.name)}</div>
+                                                <div className="w-full h-full bg-slate-300 flex items-center justify-center text-slate-900 text-3xl font-bold dark:bg-slate-700 dark:text-white">{getInitials(owner.name)}</div>
                                             )}
                                         </div>
                                     </BorderGlow>
 
                                     <div className="text-center">
-                                        <h2 className="text-2xl font-semibold text-white">{owner.name}</h2>
-                                        <p className="text-cyan-100/85 text-sm mt-1">{owner.subRole ?? owner.role}</p>
-                                        <p className="text-white/70 text-sm mt-4 leading-relaxed">
+                                        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">{owner.name}</h2>
+                                        <p className="text-cyan-700/90 text-sm mt-1 dark:text-cyan-100/85">{owner.subRole ?? owner.role}</p>
+                                        <p className="text-slate-700/80 text-sm mt-4 leading-relaxed dark:text-white/70">
                                             Guiding the DevPath vision with clarity, collaboration, and an open-source-first mindset.
                                         </p>
                                     </div>
 
                                     <div className="flex items-center justify-center gap-3">
                                         {owner.socials?.github && (
-                                            <a href={owner.socials.github} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-white/20 text-white/80 hover:text-white hover:border-cyan-300/60 transition-colors" aria-label={`${owner.name} GitHub`}>
+                                            <a href={owner.socials.github} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-slate-200/80 text-slate-900/80 hover:text-slate-900 hover:border-cyan-300/60 transition-colors dark:border-white/20 dark:text-white/80 dark:hover:text-white" aria-label={`${owner.name} GitHub`}>
                                                 <Github size={16} />
                                             </a>
                                         )}
                                         {owner.socials?.linkedin && (
-                                            <a href={owner.socials.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-white/20 text-white/80 hover:text-white hover:border-cyan-300/60 transition-colors" aria-label={`${owner.name} LinkedIn`}>
+                                            <a href={owner.socials.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-slate-200/80 text-slate-900/80 hover:text-slate-900 hover:border-cyan-300/60 transition-colors dark:border-white/20 dark:text-white/80 dark:hover:text-white" aria-label={`${owner.name} LinkedIn`}>
                                                 <Linkedin size={16} />
                                             </a>
                                         )}
                                         {owner.socials?.instagram && (
-                                            <a href={owner.socials.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-white/20 text-white/80 hover:text-white hover:border-cyan-300/60 transition-colors" aria-label={`${owner.name} Instagram`}>
+                                            <a href={owner.socials.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center border border-slate-200/80 text-slate-900/80 hover:text-slate-900 hover:border-cyan-300/60 transition-colors dark:border-white/20 dark:text-white/80 dark:hover:text-white" aria-label={`${owner.name} Instagram`}>
                                                 <Instagram size={16} />
                                             </a>
                                         )}
                                     </div>
 
-                                    <div className="border-t border-white/10 pt-6">
-                                        <h3 className="text-white text-sm uppercase tracking-[0.16em] text-center">Core Admins</h3>
+                                    <div className="border-t border-slate-200/40 pt-6 dark:border-white/10">
+                                        <h3 className="text-slate-900 text-sm uppercase tracking-[0.16em] text-center dark:text-white">Core Admins</h3>
                                         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {coreAdmins.map((member, index) => (
                                                 <CoreRoleCard key={member.id} member={member} index={index} />
@@ -488,8 +488,8 @@ export default function TeamPage() {
                                     </div>
 
                                     {heads.length > 0 && (
-                                        <div className="border-t border-white/10 pt-6">
-                                            <h3 className="text-white text-sm uppercase tracking-[0.16em] text-center">Community Heads & Leads</h3>
+                                        <div className="border-t border-slate-200/40 pt-6 dark:border-white/10">
+                                            <h3 className="text-slate-900 text-sm uppercase tracking-[0.16em] text-center dark:text-white">Community Heads & Leads</h3>
                                             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 {heads.map((member, index) => (
                                                     <CoreRoleCard key={member.id} member={member} index={index + coreAdmins.length} />
@@ -499,7 +499,7 @@ export default function TeamPage() {
                                     )}
                                 </>
                             ) : (
-                                <p className="text-white/80">Owner profile will appear here.</p>
+                                <p className="text-slate-900/80 dark:text-white/80">Owner profile will appear here.</p>
                             )}
                         </aside>
                     </div>
@@ -507,11 +507,11 @@ export default function TeamPage() {
                 </div>
             </section>
 
-            <section className="bg-white py-20">
+            <section className="bg-background py-20 text-foreground dark:bg-slate-950 dark:text-slate-100">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center">
-                        <p className="text-sky-700/70 text-sm uppercase tracking-[0.2em]">Our Mission</p>
-                        <h2 className="mt-4 text-3xl md:text-5xl font-semibold text-slate-900 leading-tight">
+                        <p className="text-sky-700/70 dark:text-cyan-200/80 text-sm uppercase tracking-[0.2em]">Our Mission</p>
+                        <h2 className="mt-4 text-3xl md:text-5xl font-semibold text-slate-900 dark:text-slate-100 leading-tight">
                             We make community-driven learning practical, collaborative, and inclusive.
                         </h2>
                     </div>
@@ -524,18 +524,18 @@ export default function TeamPage() {
                     </div>
 
                     <div className="mt-10 grid md:grid-cols-2 gap-4">
-                        <article className="rounded-2xl border border-slate-200 p-6 bg-slate-50">
-                            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Explore</p>
-                            <h3 className="mt-2 text-2xl font-semibold text-slate-900">Learn more about the team values</h3>
-                            <p className="mt-2 text-slate-600 text-sm">Understand how our team collaborates across mentorship, content, and technical initiatives.</p>
-                            <Link href="/community" className="inline-block mt-5 text-sm font-semibold text-sky-700 hover:text-sky-800">Read more</Link>
+                        <article className="rounded-2xl border border-slate-200 p-6 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+                            <p className="text-xs uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Explore</p>
+                            <h3 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">Learn more about the team values</h3>
+                            <p className="mt-2 text-slate-600 text-sm dark:text-slate-300">Understand how our team collaborates across mentorship, content, and technical initiatives.</p>
+                            <Link href="/community" className="inline-block mt-5 text-sm font-semibold text-sky-700 hover:text-sky-800 dark:text-cyan-200 dark:hover:text-cyan-100">Read more</Link>
                         </article>
 
-                        <article className="rounded-2xl border border-slate-200 p-6 bg-gradient-to-br from-surface-deep to-surface-elevated text-white">
-                            <p className="text-xs uppercase tracking-[0.16em] text-cyan-200/80">Opportunities</p>
+                        <article className="rounded-2xl border border-slate-200 p-6 bg-slate-100 text-slate-900 dark:border-slate-700 dark:bg-gradient-to-br dark:from-surface-deep dark:to-surface-elevated dark:text-white">
+                            <p className="text-xs uppercase tracking-[0.16em] text-cyan-700/90 dark:text-cyan-200/80">Opportunities</p>
                             <h3 className="mt-2 text-2xl font-semibold">Join the team</h3>
-                            <p className="mt-2 text-cyan-50/80 text-sm">We are continuously expanding with volunteer and leadership roles in multiple cities.</p>
-                            <Link href="/signup" className="inline-block mt-5 text-sm font-semibold text-cyan-200 hover:text-cyan-100">View openings</Link>
+                            <p className="mt-2 text-cyan-800/80 text-sm dark:text-cyan-50/80">We are continuously expanding with volunteer and leadership roles in multiple cities.</p>
+                            <Link href="/signup" className="inline-block mt-5 text-sm font-semibold text-cyan-700 hover:text-cyan-600 dark:text-cyan-200 dark:hover:text-cyan-100">View openings</Link>
                         </article>
                     </div>
                 </div>

@@ -466,7 +466,7 @@ export default function ResourcesTabs() {
                             onClick={() => setActiveMainTab(section.id)}
                             className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all border ${isActive
                                 ? 'bg-primary text-white border-primary shadow-lg shadow-primary/25'
-                                : 'bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10 hover:text-white'
+                                : 'bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10 hover:text-blue-400 dark:hover:text-white'
                                 }`}
                         >
                             {section.icon}
@@ -493,7 +493,7 @@ export default function ResourcesTabs() {
                                         onClick={() => setActiveSubTab(catKey)}
                                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden ${isActive
                                             ? 'text-white shadow-md'
-                                            : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                                            : 'text-muted-foreground hover:text-blue-400 dark:hover:text-white hover:bg-white/5'
                                             }`}
                                     >
                                         {isActive && (
