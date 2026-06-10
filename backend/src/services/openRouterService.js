@@ -1,4 +1,10 @@
-const AppError = require('../utils/AppError');
+const AppError = require("../utils/AppError");
+const {
+  KNOWLEDGE_BASE,
+  CONSTRAINTS,
+  TONE_AND_GUIDELINES,
+  FALLBACK_RESPONSES,
+} = require("../config/chatbotConfig");
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const DEFAULT_PRIMARY_MODEL = 'openai/gpt-oss-120b:free';
@@ -18,11 +24,29 @@ const DEFAULT_MODEL_WEIGHTS = {
   'google/gemma-4-31b:free': 75,
 };
 
+const getSystemPrompt = () => {
+  return `You are DevPath Assistant. Provide practical, concise, learner-friendly guidance for developers based on the structured knowledge base and instructions below.
+
+# STRUCTURED KNOWLEDGE BASE:
+${JSON.stringify(KNOWLEDGE_BASE, null, 2)}
+
+# CONSTRAINTS:
+${CONSTRAINTS.map((c, idx) => `${idx + 1}. ${c}`).join("\n")}
+
+# TONE & GUIDELINES:
+${TONE_AND_GUIDELINES.map((g, idx) => `${idx + 1}. ${g}`).join("\n")}
+
+# FALLBACK RESPONSES (USE EXACTLY OR ADAPT GRACEFULLY WHEN A QUERY IS OUT-OF-SCOPE OR UNKNOWN):
+- Out of scope fallback: "${FALLBACK_RESPONSES.outOfScope}"
+- Unknown feature/details fallback: "${FALLBACK_RESPONSES.unknownFeature}"
+
+Important: If the user query is not related to the DevPath platform, its features, community, events, open-source repositories, or curated guides/roadmaps, you MUST reply with the out-of-scope fallback response. Do not provide code examples for general programming queries unless it directly teaches something about DevPath platform guides.`;
+};
+
 const buildMessages = (history, message) => {
   const systemMessage = {
-    role: 'system',
-    content:
-      'You are DevPath Assistant. Provide practical, concise, learner-friendly guidance for developers.',
+    role: "system",
+    content: getSystemPrompt(),
   };
 
   const safeHistory = Array.isArray(history) ? history : [];

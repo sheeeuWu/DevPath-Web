@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
   Mail,
@@ -13,6 +13,7 @@ import {
   Linkedin,
   Instagram,
   ArrowRight,
+  ArrowLeft,
   MapPin,
   Key,
   Sparkles,
@@ -47,6 +48,39 @@ export default function SignupPage() {
   const { user, isLoading } = useAuth(); // Import useAuth
 
   if (isLoading) {
+  CheckCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import { sanitizeSocialLinks } from "@/lib/safe-social-url";
+
+export default function SignupPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 5;
+
+  // Form States
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [github, setGithub] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [adminKey, setAdminKey] = useState("");
+  const [isAdminSignup, setIsAdminSignup] = useState(false);
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -97,6 +131,95 @@ export default function SignupPage() {
 
       // 2. Update Profile Name
       await updateProfile(user, { displayName: name });
+
+  useEffect(() => {
+    if (user) {
+      router.push("/profile");
+    }
+  }, [user, router]);
+
+  if (user) return null;
+
+  // Step Validation
+  const validateStep = (step: number): boolean => {
+    setError("");
+
+    switch (step) {
+      case 1:
+        if (!name.trim()) {
+          setError("Full name is required.");
+          return false;
+        }
+        if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setError("Please enter a valid email address.");
+          return false;
+        }
+        if (!/^\d{10}$/.test(mobile)) {
+          setError("Please enter a valid 10-digit mobile number.");
+          return false;
+        }
+        return true;
+      case 2:
+        if (!state.trim() || !city.trim() || !district.trim()) {
+          setError("Please fill in all location fields.");
+          return false;
+        }
+        return true;
+      case 3:
+        return true; // Social links optional
+      case 4:
+        if (!password || password.length < 6) {
+          setError("Password must be at least 6 characters long.");
+          return false;
+        }
+        if (isAdminSignup && !adminKey.trim()) {
+          setError("Admin key is required for admin registration.");
+          return false;
+        }
+        return true;
+      case 5:
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  const goToNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+    }
+  };
+
+  const goToPrevious = () => {
+    setError("");
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSignup = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      if (isAdminSignup) {
+        const keyDoc = await getDoc(doc(db, "admin_keys", "config"));
+        if (!keyDoc.exists()) {
+          throw new Error("System Configuration Error: Admin Key not found.");
+        }
+        const currentAdminKey = keyDoc.data().value;
+
+        if (adminKey !== currentAdminKey) {
+          throw new Error("Invalid Admin Key. Please contact the Super Admin.");
+        }
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const firebaseUser = userCredential.user;
+
+      await updateProfile(firebaseUser, { displayName: name });
       const safeSocialLinks = sanitizeSocialLinks({
         linkedin,
         github,
@@ -135,6 +258,7 @@ export default function SignupPage() {
           district,
           ...safeSocialLinks,
           role: 'member',
+          role: "member",
           createdAt: serverTimestamp(),
           points: 0,
           rank: 0,
@@ -147,6 +271,10 @@ export default function SignupPage() {
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to create account.');
+      setCurrentStep(6); // Success screen
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to create account.");
     } finally {
       setLoading(false);
     }

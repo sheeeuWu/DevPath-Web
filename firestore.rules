@@ -201,6 +201,11 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin() || isAdmin();
     }
 
+    // ─── User Progress ───────────────────────────────────────────────────────
+    match /user_progress/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
     // ─── Settings ────────────────────────────────────────────────────────────
     match /settings/{settingId} {
       allow read: if true;

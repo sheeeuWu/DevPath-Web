@@ -617,6 +617,35 @@ export default function ResourcesTabs() {
                         <button
                           aria-label="Action button"
                           className="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-lg transition-colors border border-white/10 hover:border-white/20 flex items-center justify-center gap-2 group/btn"
+    return (
+        <div className="w-full max-w-7xl mx-auto">
+            <InternshipCalendarModal
+                isOpen={isInternshipModalOpen}
+                onClose={() => setIsInternshipModalOpen(false)}
+            />
+
+            <RoadmapModal
+                isOpen={isRoadmapModalOpen}
+                onClose={() => setIsRoadmapModalOpen(false)}
+                roadmap={activeRoadmap}
+            />
+
+            <DeveloperMindsetModal
+                isOpen={isMindsetModalOpen}
+                onClose={() => setIsMindsetModalOpen(false)}
+            />
+            {/* Main Navigation (Top Level) */}
+            <div className="flex flex-wrap justify-center gap-4 mb-10">
+                {mainSections.map((section) => {
+                    const isActive = activeMainTab === section.id;
+                    return (
+                        <button aria-label="Action button" 
+                            key={section.id}
+                            onClick={() => setActiveMainTab(section.id)}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all border ${isActive
+                                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/25'
+                                : 'bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10 hover:text-blue-400 dark:hover:text-white'
+                                }`}
                         >
                           Try this Prompt
                           <Terminal
@@ -678,6 +707,38 @@ export default function ResourcesTabs() {
                           <div className="bg-black/80 border border-white/10 px-4 py-2 rounded-full text-sm font-medium text-white/80 shadow-xl transform -rotate-12">
                             Not yet Added
                           </div>
+            {/* Content Area */}
+            <div className="min-h-[400px]">
+                {activeMainTab === 'ai-prompts' ? (
+                    // --- AI Prompts Section (With Sub-tabs) ---
+                    <div>
+                        {/* Sub Navigation */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-8 bg-card/30 backdrop-blur-sm p-2 rounded-2xl border border-white/5 max-w-4xl mx-auto">
+                            {aiPromptsCategories.map((catKey) => {
+                                const catData = placementResources.placementPrep.categories[catKey as keyof typeof placementResources.placementPrep.categories];
+                                const isActive = activeSubTab === catKey;
+
+                                return (
+                                    <button aria-label="Action button" 
+                                        key={catKey}
+                                        onClick={() => setActiveSubTab(catKey)}
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden ${isActive
+                                            ? 'text-white shadow-md'
+                                            : 'text-muted-foreground hover:text-blue-400 dark:hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="activeSubTabBg"
+                                                className="absolute inset-0 bg-primary/80"
+                                                initial={false}
+                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">{catData.title}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                       )}
 

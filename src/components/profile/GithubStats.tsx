@@ -241,6 +241,36 @@ export default function GithubStats({ user }: { user: any }) {
                       {new Date(event.created_at).toLocaleDateString()}
                     </p>
                   </div>
+            {user.githubStats.recentActivity && user.githubStats.recentActivity.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Recent Contributions</h4>
+                    <div className="space-y-3">
+                        {user.githubStats.recentActivity.map((event: any) => (
+                            <div key={event.id} className="flex items-start gap-3 text-sm">
+                                <div className="mt-1 min-w-[24px]">
+                                    {event.type === 'PushEvent' && <GitMerge size={16} className="text-blue-500" />}
+                                    {event.type === 'CreateEvent' && <Plus size={16} className="text-green-500" />}
+                                    {event.type === 'WatchEvent' && <Star size={16} className="text-yellow-500" />}
+                                    {event.type === 'PullRequestEvent' && <GitMerge size={16} className="text-purple-500" />}
+                                    {!['PushEvent', 'CreateEvent', 'WatchEvent', 'PullRequestEvent'].includes(event.type) && <Github size={16} className="text-muted-foreground" />}
+                                </div>
+                                <div>
+                                    <p className="text-foreground">
+                                        <span className="font-medium">
+                                            {event.type.replace('Event', '').replace(/([A-Z])/g, ' $1').trim()}
+                                        </span>
+                                        {' '}on{' '}
+                                        <a href={event.repo.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+                                            {event.repo.name}
+                                        </a>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {new Date(event.created_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
               ))}
             </div>

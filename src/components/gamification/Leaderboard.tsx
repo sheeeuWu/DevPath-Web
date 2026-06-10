@@ -23,7 +23,6 @@ export function Leaderboard() {
       setUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
   }, [filter]);
-
   return (
     <div>
       <div className="flex gap-2 mb-4">
